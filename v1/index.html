@@ -20,6 +20,7 @@
           "glasses4",
           "mustache",
           "earring",
+          "hair",
         ];
         const visibles = [
           false,
@@ -32,6 +33,7 @@
           false,
           false,
           false,
+          true,
         ];
 
         const setVisible = (button, entities, visible) => {
@@ -103,6 +105,8 @@
         <img id="mustache" src="/assets/mustache/mustache_1.png" />
 
         <img id="earring" src="/assets/earring/thumbnail.png" />
+
+        <img id="hair" src="/assets/earring/thumbnail.png" />
       </div>
 
       <a-scene
@@ -161,6 +165,11 @@
           <a-asset-item
             id="earringModel"
             src="/assets/earring/scene.gltf"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="hairModel"
+            src="public/assets/Hait/Hair_1.glb"
           ></a-asset-item>
         </a-assets>
 
@@ -295,6 +304,18 @@
             visible="false"
           ></a-gltf-model>
         </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0.05 -0.4 -0.5"
+            scale="0.027 0.027 0.027"
+            src="#hairModel"
+            class="hair-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
       </a-scene>
     </div>
   </body>
