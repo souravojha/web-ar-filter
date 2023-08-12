@@ -1,0 +1,246 @@
+<!--
+ Anchor 3D models example
+-->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/libs/aframe.min.js"></script>
+    <script src="./src/face-target/aframe.js" type="module"></script>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./main2.js" type="module"></script>
+  </head>
+
+  <body>
+    <div class="example-container">
+      <div class="options-panel">
+        <img id="hat1" src="/assets/hat/Hat_1.png" />
+        <img id="hat2" src="/assets/hat/Hat_2.png" />
+        <img id="hat3" src="/assets/hat/Hat_3.png" />
+        <img id="hat4" src="/assets/hat/Hat_4.png" />
+
+        <img id="glasses1" src="/assets/glasses/thumbnail.png" />
+        <img id="glasses2" src="/assets/glasses2/thumbnail.png" />
+        <img id="glasses3" src="/assets/glasses/glass_1.png" />
+        <img id="glasses4" src="/assets/glasses/glass_2.png" />
+
+        <img id="mustache" src="/assets/mustache/mustache_1.png" />
+
+        <img id="earring" src="/assets/earring/thumbnail.png" />
+
+        <img id="hair" src="/assets/earring/thumbnail.png" />
+      </div>
+
+      <a-scene
+        mindar-face
+        embedded
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+      >
+        <a-assets>
+          <a-asset-item
+            id="headModel"
+            src="/assets/sparkar/Full-Body-New.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="hatModel"
+            src="/assets/hat/Hat_1.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="hatModel2"
+            src="/assets/hat/Hat_2.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="hatModel3"
+            src="/assets/hat/Hat_3.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="hatModel4"
+            src="/assets/hat/Hat_4.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="glassesModel"
+            src="/assets/glasses/glass_1.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="glassesModel2"
+            src="/assets/glasses/glass_2.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="glassesModel3"
+            src="/assets/glasses/scene.gltf"
+          ></a-asset-item>
+          <a-asset-item
+            id="glassesModel4"
+            src="/assets/glasses2/scene.gltf"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="mustacheModel"
+            src="/assets/mustache/mustache_1.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="earringModel"
+            src="/assets/earring/scene.gltf"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="hairModel"
+            src="/assets/Hait/Hair_1.glb"
+          ></a-asset-item>
+        </a-assets>
+
+        <a-camera
+          active="false"
+          position="0 0 0"
+          look-controls="enabled: false"
+        ></a-camera>
+
+        <!-- head occluder -->
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            mindar-face-occluder
+            position="0 -0.3 0.15"
+            rotation="0 0 0"
+            scale="0.065 0.065 0.065"
+            src="#headModel"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 10">
+          <a-gltf-model
+            rotation="0 -90 0"
+            position="0 0.3 -0.5"
+            scale="0.65 0.6 0.6"
+            src="#hatModel"
+            class="hat1-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 10">
+          <a-gltf-model
+            rotation="0 -180 0"
+            position="0 -0.1 -0.5"
+            scale="0.7 0.7 0.7"
+            src="#hatModel2"
+            class="hat2-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 10">
+          <a-gltf-model
+            rotation="0 -0 0"
+            position="0 0.25 -0.5"
+            scale="0.45 0.45 0.45"
+            src="#hatModel3"
+            class="hat3-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 10">
+          <a-gltf-model
+            rotation="0 -0 0"
+            position="0 -0.2 -0.5"
+            scale="2.1 2.1 2.1"
+            src="#hatModel4"
+            class="hat4-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 -0.1"
+            scale="0.004 0.004 0.005"
+            src="#glassesModel"
+            class="glasses3-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 -0 0"
+            position="0 0 0"
+            scale="7 7 7"
+            src="#glassesModel2"
+            class="glasses4-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 -0 0"
+            position="0 0 -0.1"
+            scale="0.009 0.009 0.009"
+            src="#glassesModel3"
+            class="glasses1-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 -90 0"
+            position="0 -0.4 -0.17"
+            scale="0.4 0.6 0.6"
+            src="#glassesModel4"
+            class="glasses2-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 -0 0"
+            position="0 -0.38 0"
+            scale="0.3 0.3 0.3"
+            src="#mustacheModel"
+            class="mustache-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 127">
+          <a-gltf-model
+            rotation="-0.1 -50 0"
+            position="-0.05 -0.4 -0.3"
+            scale="0.07 0.07 0.07"
+            src="#earringModel"
+            class="earring-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 356">
+          <a-gltf-model
+            rotation="0.1 50 0"
+            position="0.05 -0.4 -0.3"
+            scale="0.07 0.07 0.07"
+            src="#earringModel"
+            class="earring-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0.05 -0.4 -0.5"
+            scale="0.027 0.027 0.027"
+            src="#hairModel"
+            class="hair-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+      </a-scene>
+      <div class="navigation">
+        <button class="arrow-btn arrow-left">left</button>
+        <button class="arrow-btn arrow-right">right</button>
+      </div>
+    </div>
+  </body>
+</html>
