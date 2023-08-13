@@ -7,6 +7,7 @@
     <script src="/libs/aframe.min.js"></script>
     <script src="./src/face-target/aframe.js" type="module"></script>
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./key.css" />
     <script src="./main2.js" type="module"></script>
   </head>
 
@@ -123,6 +124,7 @@
           active="false"
           position="0 0 0"
           look-controls="enabled: false"
+          wasd-controls-enabled="false"
         ></a-camera>
 
         <!-- head occluder -->
@@ -307,8 +309,8 @@
         </a-entity>
       </a-scene>
       <div class="navigation">
-        <button class="arrow-btn arrow-left">left</button>
-        <button class="arrow-btn arrow-right">right</button>
+        <button class="key__button arrow-left">Prev</button>
+        <button class="key__button arrow-right">Next</button>
       </div>
     </div>
   </body>

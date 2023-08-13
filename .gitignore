@@ -1,3 +1,5 @@
 
 package-lock.json
 v1/yarn.lock
+dist/**
+dist.zip

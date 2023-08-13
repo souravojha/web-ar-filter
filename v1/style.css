@@ -27,14 +27,13 @@ body {
 }
 
 .navigation {
-  background-color: #333;
   overflow: hidden;
+  width: 100%;
   position: absolute;
   bottom: 20px;
-  height: 100px;
-  width: 300px;
   display: flex;
-  gap: 10px;
+  justify-content: space-around;
+  padding: 20px;
 }
 
 .arrow-btn {

@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
       entity.setAttribute("visible", visible);
     });
   };
+
   list.forEach((item, index) => {
     const button = document.querySelector("#" + item.name);
     const entities = document.querySelectorAll("." + item.name + "-entity");
@@ -39,28 +40,67 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  const leftBtn = document.querySelector(".arrow-left");
-  const rightBtn = document.querySelector(".arrow-right");
-
-  const controlNavigation = (currentIndex, prevIndex) => {
-    const button1 = document.querySelector("#" + list[currentIndex].name);
-    if (activeIndex < 0) {
-      activeIndex = list.length - 1;
-    }
-    if (activeIndex >= list.length) {
-      activeIndex = 0;
-    }
-    const button2 = document.querySelector("#" + list[activeIndex].name);
-    button1.click();
-    button2.click();
+  const handleVisibility = (index, value) => {
+    const entity = document.querySelector("." + list[index].name + "-entity");
+    let item = list[index];
+    entity.setAttribute("visible", value);
+    item.isVisible = value;
   };
 
-  leftBtn.addEventListener("click", () => {
-    controlNavigation(activeIndex--, activeIndex);
-  });
+  const resetActiveIndex = () => {
+    activeIndex = 0;
+  };
 
-  rightBtn.addEventListener("click", () => {
-    controlNavigation(activeIndex++, activeIndex);
-  });
-  console.log("loaded");
+  const handlePrev = () => {
+    if (activeIndex === null) {
+      resetActiveIndex();
+    }
+    handleVisibility(activeIndex, false);
+    if (activeIndex === 0) {
+      activeIndex = list.length - 1;
+    } else {
+      activeIndex--;
+    }
+    handleVisibility(activeIndex, true);
+  };
+
+  const handleNext = () => {
+    if (activeIndex === null) {
+      resetActiveIndex();
+    }
+    handleVisibility(activeIndex, false);
+    if (activeIndex === list.length - 1) {
+      activeIndex = 0;
+    } else {
+      activeIndex++;
+    }
+    handleVisibility(activeIndex, true);
+  };
+
+  const handleReset = () => {
+    handleVisibility(activeIndex, false);
+    activeIndex = null;
+  };
+
+  const leftBtn = document.querySelector(".arrow-left");
+  const rightBtn = document.querySelector(".arrow-right");
+  leftBtn.addEventListener("click", handlePrev);
+  rightBtn.addEventListener("click", handleNext);
+  // on right arrow key press
+  document.onkeydown = function (e) {
+    switch (e.key) {
+      case "ArrowLeft":
+        handlePrev();
+        break;
+      case "ArrowRight":
+        handleNext();
+        break;
+      case "Escape":
+        handleReset();
+        break;
+      default:
+        console.log(e.key);
+        break;
+    }
+  };
 });
