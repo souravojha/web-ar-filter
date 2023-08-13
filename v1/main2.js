@@ -1,7 +1,7 @@
 let activeIndex = 0;
 
 const list = [
-  { name: "hat1", isVisible: true },
+  { name: "hat1", isVisible: false },
   { name: "hat2", isVisible: false },
   { name: "hat3", isVisible: false },
   { name: "hat4", isVisible: false },
@@ -12,6 +12,10 @@ const list = [
   { name: "mustache", isVisible: false },
   { name: "earring", isVisible: false },
   { name: "hair", isVisible: false },
+  { name: "mask1", isVisible: false },
+  { name: "mask2", isVisible: false },
+  { name: "mask3", isVisible: false },
+  { name: "mask4", isVisible: false },
 ];
 
 document.addEventListener("DOMContentLoaded", function () {

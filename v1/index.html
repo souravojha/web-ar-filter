@@ -27,7 +27,12 @@
 
         <img id="earring" src="/assets/earring/thumbnail.png" />
 
-        <img id="hair" src="/assets/earring/thumbnail.png" />
+        <img id="hair" src="./public/assets/Hait/hair_1.png" />
+
+        <img id="mask1" src="./public/assets/FaceMask/mask_1.png" />
+        <img id="mask2" src="./public/assets/FaceMask/mask_2.png" />
+        <img id="mask3" src="./public/assets/FaceMask/mask_3.png" />
+        <img id="mask4" src="./public/assets/FaceMask/mask_4.png" />
       </div>
 
       <a-scene
@@ -41,7 +46,7 @@
         <a-assets>
           <a-asset-item
             id="headModel"
-            src="/assets/sparkar/Full-Body-New.glb"
+            src="./public/assets/sparkar/Full-Body-New.glb"
           ></a-asset-item>
 
           <a-asset-item
@@ -91,6 +96,26 @@
           <a-asset-item
             id="hairModel"
             src="/assets/Hait/Hair_1.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="mask1Model"
+            src="./public/assets/FaceMask/mask_1.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="mask2Model"
+            src="./public/assets/FaceMask/mask_2.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="mask3Model"
+            src="./public/assets/FaceMask/mask_3.glb"
+          ></a-asset-item>
+
+          <a-asset-item
+            id="mask4Model"
+            src="./public/assets/FaceMask/mask_4.glb"
           ></a-asset-item>
         </a-assets>
 
@@ -233,6 +258,50 @@
             scale="0.027 0.027 0.027"
             src="#hairModel"
             class="hair-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 1 0"
+            position="0 -1 0"
+            scale="1 1 1.5"
+            src="#mask1Model"
+            class="mask1-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="1 -0.2 -0.1"
+            scale=".4 .4 .4"
+            src="#mask2Model"
+            class="mask2-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 0 -0.15"
+            scale="0.007 0.007 0.007"
+            src="#mask3Model"
+            class="mask3-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+
+        <a-entity mindar-face-target="anchorIndex: 168">
+          <a-gltf-model
+            rotation="0 0 0"
+            position="0 -10.5 -0.38"
+            scale="5.3 5.3 5"
+            src="#mask4Model"
+            class="mask4-entity"
             visible="false"
           ></a-gltf-model>
         </a-entity>
