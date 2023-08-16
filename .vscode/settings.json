@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
+        "AFRAME",
+        "facemesh",
         "gltf",
+        "importmap",
         "mindar",
         "occluder",
         "unproject",
