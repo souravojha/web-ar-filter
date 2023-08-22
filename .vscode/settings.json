@@ -1,11 +1,18 @@
 {
     "cSpell.words": [
         "AFRAME",
+        "blendshape",
+        "blendshapes",
+        "coefs",
         "facemesh",
+        "Fileset",
         "gltf",
         "importmap",
+        "Landmarker",
+        "landmarkspose",
         "mindar",
         "occluder",
+        "retarget",
         "unproject",
         "visibles"
     ]
