@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "AFRAME",
+        "autoupdate",
         "blendshape",
         "blendshapes",
         "coefs",
@@ -10,9 +11,11 @@
         "importmap",
         "Landmarker",
         "landmarkspose",
+        "lerp",
         "mindar",
         "occluder",
         "retarget",
+        "retargetting",
         "unproject",
         "visibles"
     ]

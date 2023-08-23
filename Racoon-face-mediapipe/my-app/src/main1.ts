@@ -298,6 +298,7 @@ let video: HTMLVideoElement;
 const scene = new BasicScene();
 const avatar = new Avatar(
   "https://assets.codepen.io/9177687/raccoon_head.glb",
+  // "./public/Model-Detailing.glb",
   scene.scene
 );
 
@@ -307,7 +308,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
   }
   //For face landmarks
   const landmarks = faceLandmarker.detectForVideo(video, time);
-  
+
   // Apply transformation
   const transformationMatrices = landmarks.facialTransformationMatrixes;
   if (transformationMatrices && transformationMatrices.length > 0) {
@@ -326,36 +327,24 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
 
 function detectPoseLandmarks(time: DOMHighResTimeStamp): void {
   if (!poseLandmarker) {
+    console.log("Wait for poseLandmarker to load before clicking!");
     return;
   }
-  //For Pose landmarks
+  // Get landmarks
   const landmarkspose = poseLandmarker.detectForVideo(video, time);
-  const poseLandmarks = landmarkspose.poseLandmarks;
-  console.log(poseLandmarks);
-  
-  poseLandmarks.forEach((landmarkspose: { x: any; y: any; name: string; }) => {
+  const worldLandmarks = landmarkspose.poseWorldLandmarks;
+  console.log("Pose Landmark data : " + poseLandmarker);
+  console.log("Landmark data : " + landmarkspose);
 
-    // Get landmark position
-    const x = landmarkspose.x;
-    const y = landmarkspose.y;
-  
-    // Map to matching avatar joint
-    // Index 11 = left shoulder
-    if(landmarkspose.name == 'left_shoulder') {
-      avatar.leftShoulder.position.set(x, y, 0);
-    }
-  
-    // Index 12 = right shoulder
-    if(landmarkspose.name == 'right_shoulder') {
-      avatar.rightShoulder.position.set(x, y, 0); 
-    }  
-  });
+  const canvas = document.createElement("canvas");
+  const canvasCtx = canvas.getContext("2d");
+  const drawingUtils = new DrawingUtils(canvasCtx);
 
-  // Apply Blendshapes
-  const blendshapes = landmarkspose.faceBlendshapes;
-  if (blendshapes && blendshapes.length > 0) {
-    const coefsMap = retarget(blendshapes);
-    avatar.updateBlendshapes(coefsMap);
+  for (const landmark of worldLandmarks) {
+    drawingUtils.drawLandmarks(landmark, {
+      radius: (data: { from: any; }) => DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1)
+    });
+    drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
   }
 }
 
@@ -386,10 +375,10 @@ function retarget(blendshapes: Classifications[]) {
 }
 
 function onVideoFrame(time: DOMHighResTimeStamp): void {
-  
+
   // Do something with the frame.
-  detectFaceLandmarks(time);
-  // detectPoseLandmarks(time);
+  //detectFaceLandmarks(time);
+  detectPoseLandmarks(time);
 
   // Re-register the callback to be notified about the next frame.
   video.requestVideoFrameCallback(onVideoFrame);
@@ -444,7 +433,7 @@ async function runDemo() {
 
   //For Pose
   poseLandmarker = await PoseLandmarker.createFromModelPath(
-    vision, 
+    vision,
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
   );
   await poseLandmarker.setOptions({
