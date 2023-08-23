@@ -343,8 +343,26 @@ function detectPoseLandmarks(time: DOMHighResTimeStamp): void {
   console.log("Landmark data : ", landmarkspose);
 
   const canvas = document.createElement("canvas");
-  const canvasCtx = canvas.getContext("2d");
-  const drawingUtils = new DrawingUtils(canvasCtx);
+  const ctx = canvas.getContext("2d");
+  const drawingUtils = new DrawingUtils(ctx);
+
+  // ctx?.beginPath();
+
+  // // Loop through pose connections
+  // for (let i = 0; i < PoseLandmarker.POSE_CONNECTIONS.length; i++) {
+  //   // Get pair of landmarks to connect
+  //   const start = PoseLandmarker.POSE_CONNECTIONS[i][0];
+  //   const end = PoseLandmarker.POSE_CONNECTIONS[i][1];
+
+  //   // Get their positions  
+  //   const startPos = worldLandmarks[start];
+  //   const endPos = worldLandmarks[end];
+
+  //   ctx?.moveTo(startPos.x, startPos.y);
+  //   ctx?.lineTo(endPos.x, endPos.y);
+  // }
+
+  // ctx?.stroke();
 
   for (const landmark of worldLandmarks) {
     drawingUtils.drawLandmarks(landmark, {
