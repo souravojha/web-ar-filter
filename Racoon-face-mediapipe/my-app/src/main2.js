@@ -12,14 +12,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import * as THREE from "https://cdn.skypack.dev/three@0.150.1";
-import { OrbitControls } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/controls/OrbitControls";
-import { GLTFLoader } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/loaders/GLTFLoader";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import {
   FilesetResolver,
   FaceLandmarker,
   PoseLandmarker,
-} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+  DrawingUtils,
+} from "@mediapipe/tasks-vision";
 
 /**
  * Returns the world-space dimensions of the viewport at `depth` units away from
@@ -256,10 +257,14 @@ class Avatar {
 let faceLandmarker;
 let poseLandmarker;
 let video;
+const videoHeight = "360px";
+const videoWidth = "480px";
 
 const scene = new BasicScene();
 const avatar = new Avatar(
-  "https://assets.codepen.io/9177687/raccoon_head.glb",
+  // "https://assets.codepen.io/9177687/raccoon_head.glb",
+  "/raccoon_head.glb",
+  // "/Model-Detailing.glb",
   scene.scene
 );
 
@@ -286,38 +291,41 @@ function detectFaceLandmarks(time) {
   }
 }
 
+const canvas = document.getElementById("canvas");
+const canvasCtx = canvas.getContext("2d");
+const drawingUtils = new DrawingUtils(canvasCtx);
+
 function detectPoseLandmarks(time) {
   if (!poseLandmarker) {
+    console.log("Wait for poseLandmarker to load before clicking!");
     return;
   }
-  //For Pose landmarks
-  const landmarkspose = poseLandmarker.detectForVideo(video, time);
-  const poseLandmarks = landmarkspose.poseLandmarks;
-  console.log(poseLandmarks);
 
-  poseLandmarks.forEach((landmarkspose) => {
-    // Get landmark position
-    const x = landmarkspose.x;
-    const y = landmarkspose.y;
-
-    // Map to matching avatar joint
-    // Index 11 = left shoulder
-    if (landmarkspose.name == "left_shoulder") {
-      avatar.leftShoulder.position.set(x, y, 0);
-    }
-
-    // Index 12 = right shoulder
-    if (landmarkspose.name == "right_shoulder") {
-      avatar.rightShoulder.position.set(x, y, 0);
-    }
-  });
-
-  // Apply Blendshapes
-  const blendshapes = landmarkspose.faceBlendshapes;
-  if (blendshapes && blendshapes.length > 0) {
-    const coefsMap = retarget(blendshapes);
-    avatar.updateBlendshapes(coefsMap);
+  if (poseLandmarker) {
+    console.log("poseLandmarker IN FUNC", poseLandmarker);
   }
+
+  // Get landmarks
+  poseLandmarker.detectForVideo(video, time, (result) => {
+    canvas.style.width = videoWidth;
+    canvas.style.height = videoHeight;
+
+    video.style.width = videoWidth;
+    video.style.height = videoHeight;
+
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+    canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Draw pose landmarks
+    for (const landmark of result.landmarks) {
+      drawingUtils.drawLandmarks(landmark, {
+        radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
+      });
+      drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+    }
+    canvasCtx.restore();
+  });
 }
 
 function retarget(blendshapes) {
@@ -348,8 +356,8 @@ function retarget(blendshapes) {
 
 function onVideoFrame(time) {
   // Do something with the frame.
-  detectFaceLandmarks(time);
-  // detectPoseLandmarks(time);
+  // detectFaceLandmarks(time);
+  detectPoseLandmarks(time);
 
   // Re-register the callback to be notified about the next frame.
   video.requestVideoFrameCallback(onVideoFrame);
@@ -393,9 +401,6 @@ async function runDemo() {
     vision,
     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
   );
-
-  console.log(faceLandmarker);
-
   await faceLandmarker.setOptions({
     baseOptions: {
       delegate: "GPU",
@@ -410,7 +415,9 @@ async function runDemo() {
     vision,
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
   );
+
   console.log("poseLandmarker", poseLandmarker);
+
   await poseLandmarker.setOptions({
     baseOptions: {
       delegate: "GPU",
