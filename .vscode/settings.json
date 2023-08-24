@@ -13,6 +13,7 @@
         "landmarkspose",
         "lerp",
         "mindar",
+        "morphable",
         "occluder",
         "retarget",
         "retargetting",

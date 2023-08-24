@@ -68,6 +68,10 @@ class BasicScene {
       5000
     );
 
+    // // Cube mesh
+    // this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    // this.scene.add(this.cube);
+
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.width, this.height);
     THREE.ColorManagement.legacy = false;
@@ -260,12 +264,12 @@ let video;
 const videoHeight = "360px";
 const videoWidth = "480px";
 
-const scene = new BasicScene();
+const Scene = new BasicScene();
 const avatar = new Avatar(
   // "https://assets.codepen.io/9177687/raccoon_head.glb",
   "/raccoon_head.glb",
   // "/Model-Detailing.glb",
-  scene.scene
+  Scene.scene
 );
 
 function detectFaceLandmarks(time) {
@@ -291,9 +295,9 @@ function detectFaceLandmarks(time) {
   }
 }
 
-const canvas = document.getElementById("canvas");
-const canvasCtx = canvas.getContext("2d");
-const drawingUtils = new DrawingUtils(canvasCtx);
+// const canvas = document.getElementById("canvas");
+// const canvasCtx = canvas.getContext("2d");
+// const drawingUtils = new DrawingUtils(canvasCtx);
 
 function detectPoseLandmarks(time) {
   if (!poseLandmarker) {
@@ -305,26 +309,44 @@ function detectPoseLandmarks(time) {
     console.log("poseLandmarker IN FUNC", poseLandmarker);
   }
 
+
   // Get landmarks
   poseLandmarker.detectForVideo(video, time, (result) => {
-    canvas.style.width = videoWidth;
-    canvas.style.height = videoHeight;
 
-    video.style.width = videoWidth;
-    video.style.height = videoHeight;
+    //leftShoulder anchor
+    const leftShoulder = poseLandmarker[11];
+    console.log("leftShoulder : " + leftShoulder); // showing undefine
 
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-    canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Cube geometry 
+    const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    const cubeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+
+    // Cube mesh
+    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    Scene.scene.add(cube);
+
+    // Scene.scene.cube.position.x = leftShoulder.x;
+    // Scene.scene.cube.position.y = leftShoulder.y; 
+    // Scene.scene.cube.position.z = leftShoulder.z;
+
+    // canvas.style.width = videoWidth;
+    // canvas.style.height = videoHeight;
+
+    // video.style.width = videoWidth;
+    // video.style.height = videoHeight;
+
+    // canvasCtx.save();
+    // canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+    // canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Draw pose landmarks
-    for (const landmark of result.landmarks) {
-      drawingUtils.drawLandmarks(landmark, {
-        radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
-      });
-      drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-    }
-    canvasCtx.restore();
+    // for (const landmark of result.landmarks) {
+    //   drawingUtils.drawLandmarks(landmark, {
+    //     radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
+    //   });
+    //   drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+    // }
+    // canvasCtx.restore();
   });
 }
 
@@ -356,7 +378,7 @@ function retarget(blendshapes) {
 
 function onVideoFrame(time) {
   // Do something with the frame.
-  // detectFaceLandmarks(time);
+  //detectFaceLandmarks(time);
   detectPoseLandmarks(time);
 
   // Re-register the callback to be notified about the next frame.
