@@ -299,6 +299,25 @@ function detectFaceLandmarks(time) {
 // const canvasCtx = canvas.getContext("2d");
 // const drawingUtils = new DrawingUtils(canvasCtx);
 
+//Function for Cube place
+function placeCubeOnShoulder(shoulderLandmark) {
+  // Cube geometry
+  const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+  const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+  // Cube mesh
+  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+  // Adjust cube's position based on shoulder landmark
+  cube.position.x = shoulderLandmark.x;
+  cube.position.y = shoulderLandmark.y;
+  cube.position.z = -0.5; // Adjust the z-coordinate as needed
+
+  // Add the cube to the scene
+  Scene.scene.add(cube);
+}
+
+//Function for Pose detection
 function detectPoseLandmarks(time) {
   if (!poseLandmarker) {
     console.log("Wait for poseLandmarker to load before clicking!");
@@ -310,24 +329,24 @@ function detectPoseLandmarks(time) {
   }
 
 
-  // Get landmarks
+  // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
+    const landmarks = result.landmarks;
 
-    //leftShoulder anchor
-    const leftShoulder = poseLandmarker[11];
-    console.log("leftShoulder : " + leftShoulder); // showing undefine
+    if (landmarks && landmarks.length > 0) {
+      const leftShoulder = landmarks[11]; // Adjust the index if needed
 
-    // Cube geometry 
-    const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-    const cubeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+      if (leftShoulder) {
+        console.log("leftShoulder:", leftShoulder);
 
-    // Cube mesh
-    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    Scene.scene.add(cube);
-
-    // Scene.scene.cube.position.x = leftShoulder.x;
-    // Scene.scene.cube.position.y = leftShoulder.y; 
-    // Scene.scene.cube.position.z = leftShoulder.z;
+        // Call the function to place the cube on the shoulder
+        placeCubeOnShoulder(leftShoulder);
+      } else {
+        console.log("Left shoulder landmark not detected.");
+      }
+    } else {
+      console.log("No landmarks detected.");
+    }
 
     // canvas.style.width = videoWidth;
     // canvas.style.height = videoHeight;
@@ -348,6 +367,15 @@ function detectPoseLandmarks(time) {
     // }
     // canvasCtx.restore();
   });
+}
+
+//For update the position 
+function updatePosition(element, coordinate){
+  element.object3D.position.set(
+    coordinate.x * -5,
+    coordinate.y * -4,
+    -4 + coordinate.z * -4
+  );
 }
 
 function retarget(blendshapes) {
