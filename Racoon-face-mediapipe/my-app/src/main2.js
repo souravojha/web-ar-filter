@@ -299,22 +299,34 @@ function detectFaceLandmarks(time) {
 // const canvasCtx = canvas.getContext("2d");
 // const drawingUtils = new DrawingUtils(canvasCtx);
 
-//Function for Cube place
-function placeCubeOnShoulder(shoulderLandmark) {
-  // Cube geometry
+const createCube = () => {
   const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
   const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
   // Cube mesh
   const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-  // Adjust cube's position based on shoulder landmark
-  cube.position.x = shoulderLandmark.x;
-  cube.position.y = shoulderLandmark.y;
-  cube.position.z = -0.5; // Adjust the z-coordinate as needed
-
-  // Add the cube to the scene
+  cube.position.set(0, 0, -10);
+  cube.name = "cube-custom";
   Scene.scene.add(cube);
+};
+createCube();
+
+//Function for Cube place
+function placeCubeOnShoulder(shoulderLandmark) {
+  // Get the cube mesh
+  const cube = Scene.scene.getObjectByName("cube-custom");
+
+  if (!cube) {
+    console.log("Cube not found");
+    return;
+  }
+
+  // Update the cube position
+  cube.position.set(
+    shoulderLandmark.x * -5,
+    shoulderLandmark.y * -4,
+    -10 + shoulderLandmark.z
+  );
 }
 
 //Function for Pose detection
@@ -328,17 +340,17 @@ function detectPoseLandmarks(time) {
     console.log("poseLandmarker IN FUNC", poseLandmarker);
   }
 
-
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
 
+    console.log("andmarks", landmarks);
+
     if (landmarks && landmarks.length > 0) {
-      const leftShoulder = landmarks[11]; // Adjust the index if needed
+      const leftShoulder = landmarks[0][11]; // Adjust the index if needed
 
+      console.log("leftShoulder:", leftShoulder);
       if (leftShoulder) {
-        console.log("leftShoulder:", leftShoulder);
-
         // Call the function to place the cube on the shoulder
         placeCubeOnShoulder(leftShoulder);
       } else {
@@ -369,8 +381,8 @@ function detectPoseLandmarks(time) {
   });
 }
 
-//For update the position 
-function updatePosition(element, coordinate){
+//For update the position
+function updatePosition(element, coordinate) {
   element.object3D.position.set(
     coordinate.x * -5,
     coordinate.y * -4,
