@@ -58,7 +58,8 @@ class BasicScene {
   constructor() {
     // Initialize the canvas with the same aspect ratio as the video input
     this.height = window.innerHeight;
-    this.width = (this.height * 1280) / 720;
+    // this.width = (this.height * 1280) / 720;
+    this.width = window.innerWidth;
     // Set up the Three.js scene, camera, and renderer
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
@@ -162,7 +163,6 @@ class Avatar {
           this.morphTargetMeshes = [];
         }
         this.gltf = gltf;
-        console.log();
         this.scene.add(gltf.scene);
         this.init(gltf);
       }, // Called while loading is progressing
@@ -265,8 +265,8 @@ const videoHeight = "360px";
 const videoWidth = "480px";
 
 const Scene = new BasicScene();
+// "https://assets.codepen.io/9177687/raccoon_head.glb",
 const avatar = new Avatar(
-  // "https://assets.codepen.io/9177687/raccoon_head.glb",
   "/raccoon_head.glb",
   // "/Model-Detailing.glb",
   Scene.scene
@@ -299,34 +299,55 @@ function detectFaceLandmarks(time) {
 // const canvasCtx = canvas.getContext("2d");
 // const drawingUtils = new DrawingUtils(canvasCtx);
 
-const createCube = () => {
+const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
+  console.log("coordinate", coordinate);
   const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
   const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
   // Cube mesh
   const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  cube.position.set(0, 0, -10);
-  cube.name = "cube-custom";
+  cube.position.set(coordinate.x, coordinate.y, coordinate.z);
+  cube.name = name;
   Scene.scene.add(cube);
 };
-createCube();
+
+const maxY = -5.5,
+  minY = 5.5;
+const maxX = 10,
+  minX = -10;
+
+createCube(
+  { x: deNormalize(0), y: deNormalize(0, minY, maxY), z: -10 },
+  "left-cube"
+);
+createCube(
+  { x: deNormalize(1), y: deNormalize(1, minY, maxY), z: -10 },
+  "right-cube"
+);
 
 //Function for Cube place
-function placeCubeOnShoulder(shoulderLandmark) {
+function placeCubeOnShoulder(shoulderLandmark, name) {
   // Get the cube mesh
-  const cube = Scene.scene.getObjectByName("cube-custom");
+  const cube = Scene.scene.getObjectByName(name);
 
   if (!cube) {
-    console.log("Cube not found");
+    console.log("Cube not found", name);
     return;
   }
 
   // Update the cube position
+  // cube.position.set(
+  //   shoulderLandmark.x * -5,
+  //   shoulderLandmark.y * -4,
+  //   -10 + shoulderLandmark.z
+  // );
   cube.position.set(
-    shoulderLandmark.x * -5,
-    shoulderLandmark.y * -4,
+    deNormalize(shoulderLandmark.x, minX, maxX),
+    deNormalize(shoulderLandmark.y, minY, maxY),
     -10 + shoulderLandmark.z
   );
+
+  console.log("cube.position", name, cube.position, shoulderLandmark);
 }
 
 //Function for Pose detection
@@ -336,23 +357,23 @@ function detectPoseLandmarks(time) {
     return;
   }
 
-  if (poseLandmarker) {
-    console.log("poseLandmarker IN FUNC", poseLandmarker);
-  }
-
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
 
-    console.log("andmarks", landmarks);
+    // console.log("andmarks", landmarks);
 
     if (landmarks && landmarks.length > 0) {
       const leftShoulder = landmarks[0][11]; // Adjust the index if needed
+      const rightShoulder = landmarks[0][12]; // Adjust the index if needed
 
-      console.log("leftShoulder:", leftShoulder);
       if (leftShoulder) {
         // Call the function to place the cube on the shoulder
-        placeCubeOnShoulder(leftShoulder);
+        placeCubeOnShoulder(leftShoulder, "left-cube");
+      }
+      if (rightShoulder) {
+        // Call the function to place the cube on the shoulder
+        placeCubeOnShoulder(rightShoulder, "right-cube");
       } else {
         console.log("Left shoulder landmark not detected.");
       }
@@ -420,7 +441,6 @@ function onVideoFrame(time) {
   // Do something with the frame.
   //detectFaceLandmarks(time);
   detectPoseLandmarks(time);
-
   // Re-register the callback to be notified about the next frame.
   video.requestVideoFrameCallback(onVideoFrame);
 }
@@ -478,16 +498,29 @@ async function runDemo() {
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
   );
 
-  console.log("poseLandmarker", poseLandmarker);
+  // console.log("poseLandmarker", poseLandmarker);
 
   await poseLandmarker.setOptions({
     baseOptions: {
       delegate: "GPU",
     },
     runningMode: "VIDEO",
+    // outputSegmentationMasks: true,
   });
 
   console.log("Finished Loading MediaPipe Model.");
 }
 
 runDemo();
+
+function normalize(value, min = -10, max = 10) {
+  return (value - min) / (max - min);
+}
+
+function normalizeRotation(value, min = -180, max = 180) {
+  return (value - min) / (max - min);
+}
+
+function deNormalize(value, min = -10, max = 10) {
+  return value * (max - min) + min;
+}
