@@ -12,6 +12,7 @@
         "Landmarker",
         "landmarkspose",
         "lerp",
+        "mediapipe",
         "mindar",
         "morphable",
         "occluder",
