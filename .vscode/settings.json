@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "AFRAME",
+        "andmarks",
         "autoupdate",
         "blendshape",
         "blendshapes",
@@ -18,6 +19,7 @@
         "occluder",
         "retarget",
         "retargetting",
+        "slerp",
         "unproject",
         "visibles"
     ]

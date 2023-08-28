@@ -295,17 +295,18 @@ function detectFaceLandmarks(time) {
   }
 }
 
+/* For Canvas which used for drawing the points*/
 // const canvas = document.getElementById("canvas");
 // const canvasCtx = canvas.getContext("2d");
 // const drawingUtils = new DrawingUtils(canvasCtx);
+
+/* For Rotating the cube... */
 
 const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
   console.log("coordinate", coordinate);
   const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
   const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-  // Cube mesh
-  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial); // Cube mesh
   cube.position.set(coordinate.x, coordinate.y, coordinate.z);
   cube.name = name;
   Scene.scene.add(cube);
@@ -317,34 +318,35 @@ const maxX = 10,
   minX = -10;
 
 createCube(
-  { x: deNormalize(0), y: deNormalize(0, minY, maxY), z: -10 },
+  { 
+    x: deNormalize(0), 
+    y: deNormalize(0, minY, maxY), 
+    z: deNormalize(0, minY, maxY),
+  },
   "left-cube"
 );
 createCube(
-  { x: deNormalize(1), y: deNormalize(1, minY, maxY), z: -10 },
+  { 
+    x: deNormalize(1), 
+    y: deNormalize(1, minY, maxY), 
+    z: deNormalize(1, minY, maxY),
+  },
   "right-cube"
 );
 
 //Function for Cube place
 function placeCubeOnShoulder(shoulderLandmark, name) {
-  // Get the cube mesh
-  const cube = Scene.scene.getObjectByName(name);
+  const cube = Scene.scene.getObjectByName(name); // Get the cube mesh
 
   if (!cube) {
     console.log("Cube not found", name);
     return;
   }
-
-  // Update the cube position
-  // cube.position.set(
-  //   shoulderLandmark.x * -5,
-  //   shoulderLandmark.y * -4,
-  //   -10 + shoulderLandmark.z
-  // );
+  
   cube.position.set(
     deNormalize(shoulderLandmark.x, minX, maxX),
     deNormalize(shoulderLandmark.y, minY, maxY),
-    -10 + shoulderLandmark.z
+    deNormalize(shoulderLandmark.z, minX, minY)
   );
 
   console.log("cube.position", name, cube.position, shoulderLandmark);
@@ -361,19 +363,15 @@ function detectPoseLandmarks(time) {
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
 
-    // console.log("andmarks", landmarks);
-
     if (landmarks && landmarks.length > 0) {
       const leftShoulder = landmarks[0][11]; // Adjust the index if needed
       const rightShoulder = landmarks[0][12]; // Adjust the index if needed
 
       if (leftShoulder) {
-        // Call the function to place the cube on the shoulder
-        placeCubeOnShoulder(leftShoulder, "left-cube");
+        placeCubeOnShoulder(leftShoulder, "left-cube"); // Call the function to place the cube on the shoulder
       }
       if (rightShoulder) {
-        // Call the function to place the cube on the shoulder
-        placeCubeOnShoulder(rightShoulder, "right-cube");
+        placeCubeOnShoulder(rightShoulder, "right-cube"); // Call the function to place the cube on the shoulder
       } else {
         console.log("Left shoulder landmark not detected.");
       }
@@ -400,15 +398,6 @@ function detectPoseLandmarks(time) {
     // }
     // canvasCtx.restore();
   });
-}
-
-//For update the position
-function updatePosition(element, coordinate) {
-  element.object3D.position.set(
-    coordinate.x * -5,
-    coordinate.y * -4,
-    -4 + coordinate.z * -4
-  );
 }
 
 function retarget(blendshapes) {
@@ -438,11 +427,8 @@ function retarget(blendshapes) {
 }
 
 function onVideoFrame(time) {
-  // Do something with the frame.
-  //detectFaceLandmarks(time);
-  detectPoseLandmarks(time);
-  // Re-register the callback to be notified about the next frame.
-  video.requestVideoFrameCallback(onVideoFrame);
+  detectPoseLandmarks(time); //detectFaceLandmarks(time);
+  video.requestVideoFrameCallback(onVideoFrame); // Re-register the callback to be notified about the next frame.
 }
 
 // Stream webcam into landmarker loop (and also make video visible)
@@ -498,8 +484,6 @@ async function runDemo() {
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
   );
 
-  // console.log("poseLandmarker", poseLandmarker);
-
   await poseLandmarker.setOptions({
     baseOptions: {
       delegate: "GPU",
@@ -523,4 +507,4 @@ function normalizeRotation(value, min = -180, max = 180) {
 
 function deNormalize(value, min = -10, max = 10) {
   return value * (max - min) + min;
-}
+} 
