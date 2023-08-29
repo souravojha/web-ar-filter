@@ -192,13 +192,34 @@ class Avatar {
       if (leftShoulderLandmark && leftShoulderBone) {
         // Calculate the new position for the left shoulder bone based on the landmark
         const newPosition = new THREE.Vector3(
-          leftShoulderLandmark[0],  // X coordinate of the landmark
-          leftShoulderLandmark[1],  // Y coordinate of the landmark
-          leftShoulderLandmark[2]   // Z coordinate of the landmark
+          leftShoulderLandmark.x,  // X coordinate of the landmark
+          leftShoulderLandmark.y,  // Y coordinate of the landmark
+          leftShoulderLandmark.z   // Z coordinate of the landmark
         );
 
         // Set the new position of the left shoulder bone
         leftShoulderBone.position.copy(newPosition);
+      }
+    }
+  }
+  //For leftShoulder movement using the poseLandmark data
+  moveRightShoulderWithPoseLandmarks(landmarks) {
+    const rightShoulderIndex = 12; // Index for the RIght shoulder landmark, adjust if needed
+    if (landmarks && landmarks.length > 0 && landmarks[0].length > rightShoulderIndex) {
+      const RightShoulderLandmark = landmarks[0][rightShoulderIndex];
+      const avatarBones = this.getBones();
+      const RightShoulderBone = avatarBones.find(bone => bone.name === 'RightShoulder');
+
+      if (RightShoulderLandmark && RightShoulderBone) {
+        // Calculate the new position for the left shoulder bone based on the landmark
+        const newPosition = new THREE.Vector3(
+          RightShoulderLandmark.x,  // X coordinate of the landmark
+          RightShoulderLandmark.y,  // Y coordinate of the landmark
+          RightShoulderLandmark.z   // Z coordinate of the landmark
+        );
+
+        // Set the new position of the left shoulder bone
+        RightShoulderBone.position.copy(newPosition);
       }
     }
   }
@@ -212,9 +233,9 @@ class Avatar {
       }
       // Return early if no mesh is found.
       if (!object.isMesh) {
-        // console.warn(`No mesh found`);
+        console.warn(`No mesh found`);
         return;
-      }
+      }          
 
       const mesh = object;
       // Reduce clipping when model is close to camera.
@@ -422,10 +443,18 @@ function detectPoseLandmarks(time) {
       // }
 
       if (leftShoulder) {
-        placeCubeOnShoulder(leftShoulder, "left-cube"); // Call the function to place the cube on the shoulder
+        // Call the function to place the cube on the shoulder
+        placeCubeOnShoulder(leftShoulder, "left-cube");
+
+        // Move the LeftShoulder bone using pose landmark data
+        avatar.moveLeftShoulderWithPoseLandmarks(landmarks);
       }
       if (rightShoulder) {
-        placeCubeOnShoulder(rightShoulder, "right-cube"); // Call the function to place the cube on the shoulder
+        // Call the function to place the cube on the shoulder
+        placeCubeOnShoulder(rightShoulder, "right-cube");
+
+        // Move the LeftShoulder bone using pose landmark data
+        avatar.moveRightShoulderWithPoseLandmarks(landmarks);
       } else {
         console.log("Left shoulder landmark not detected.");
       }
