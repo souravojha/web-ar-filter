@@ -56,22 +56,16 @@ class BasicScene {
   callbacks = [];
 
   constructor() {
-    // Initialize the canvas with the same aspect ratio as the video input
-    this.height = window.innerHeight;
+    this.height = window.innerHeight; // Initialize the canvas with the same aspect ratio as the video input
     // this.width = (this.height * 1280) / 720;
     this.width = window.innerWidth;
-    // Set up the Three.js scene, camera, and renderer
-    this.scene = new THREE.Scene();
+    this.scene = new THREE.Scene();  // Set up the Three.js scene, camera, and renderer
     this.camera = new THREE.PerspectiveCamera(
       60,
       this.width / this.height,
       0.01,
       5000
     );
-
-    // // Cube mesh
-    // this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    // this.scene.add(this.cube);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.width, this.height);
@@ -153,12 +147,10 @@ class Avatar {
 
   loadModel(url) {
     this.url = url;
-    this.loader.load(
-      // URL of the model you want to load
+    this.loader.load(  // URL of the model you want to load
       url, // Callback when the resource is loaded
       (gltf) => {
-        if (this.gltf) {
-          // Reset GLTF and morphTargetMeshes if a previous model was loaded.
+        if (this.gltf) {  // Reset GLTF and morphTargetMeshes if a previous model was loaded.
           this.gltf.scene.remove();
           this.morphTargetMeshes = [];
         }
@@ -174,6 +166,41 @@ class Avatar {
         ), // Called when loading has errors
       (error) => console.error(error)
     );
+  }
+
+  // Get all the Bones in Array from the model if they have bones
+  getBones() {
+    const bones = [];
+    if (this.root) {
+      this.root.traverse((object) => {
+        if (object.isBone) {
+          bones.push(object);
+        }
+      });
+    }
+    return bones;
+  }
+
+  //For leftShoulder movement using the poseLandmark data
+  moveLeftShoulderWithPoseLandmarks(landmarks) {
+    const leftShoulderIndex = 11; // Index for the left shoulder landmark, adjust if needed
+    if (landmarks && landmarks.length > 0 && landmarks[0].length > leftShoulderIndex) {
+      const leftShoulderLandmark = landmarks[0][leftShoulderIndex];
+      const avatarBones = this.getBones();
+      const leftShoulderBone = avatarBones.find(bone => bone.name === 'LeftShoulder');
+
+      if (leftShoulderLandmark && leftShoulderBone) {
+        // Calculate the new position for the left shoulder bone based on the landmark
+        const newPosition = new THREE.Vector3(
+          leftShoulderLandmark[0],  // X coordinate of the landmark
+          leftShoulderLandmark[1],  // Y coordinate of the landmark
+          leftShoulderLandmark[2]   // Z coordinate of the landmark
+        );
+
+        // Set the new position of the left shoulder bone
+        leftShoulderBone.position.copy(newPosition);
+      }
+    }
   }
 
   init(gltf) {
@@ -258,6 +285,16 @@ class Avatar {
   }
 }
 
+/* Function for calculating the distance between two shoulder points */
+function calculateDistance(point1, point2) {
+  const dx = point2[0] - point1[0];
+  const dy = point2[1] - point1[1];
+  const dz = point2[2] - point1[2];
+
+  return Math.sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+
 let faceLandmarker;
 let poseLandmarker;
 let video;
@@ -267,8 +304,8 @@ const videoWidth = "480px";
 const Scene = new BasicScene();
 // "https://assets.codepen.io/9177687/raccoon_head.glb",
 const avatar = new Avatar(
-  "/raccoon_head.glb",
-  // "/Model-Detailing.glb",
+  // "/raccoon_head.glb",
+  "/Model-Detailing.glb",
   Scene.scene
 );
 
@@ -294,14 +331,6 @@ function detectFaceLandmarks(time) {
     avatar.updateBlendshapes(coefsMap);
   }
 }
-
-/* For Canvas which used for drawing the points*/
-// const canvas = document.getElementById("canvas");
-// const canvasCtx = canvas.getContext("2d");
-// const drawingUtils = new DrawingUtils(canvasCtx);
-
-/* For Rotating the cube... */
-
 const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
   console.log("coordinate", coordinate);
   const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
@@ -318,21 +347,27 @@ const maxX = 10,
   minX = -10;
 
 createCube(
-  { 
-    x: deNormalize(0), 
-    y: deNormalize(0, minY, maxY), 
+  {
+    x: deNormalize(0),
+    y: deNormalize(0, minY, maxY),
     z: deNormalize(0, minY, maxY),
   },
   "left-cube"
 );
 createCube(
-  { 
-    x: deNormalize(1), 
-    y: deNormalize(1, minY, maxY), 
+  {
+    x: deNormalize(1),
+    y: deNormalize(1, minY, maxY),
     z: deNormalize(1, minY, maxY),
   },
   "right-cube"
 );
+
+/* Accessing all  the bones */
+// const bones = avatar.getBones();
+// for (const bone of bones) {
+//   console.log("Bone Name : ", bone.name);
+// }
 
 //Function for Cube place
 function placeCubeOnShoulder(shoulderLandmark, name) {
@@ -342,7 +377,7 @@ function placeCubeOnShoulder(shoulderLandmark, name) {
     console.log("Cube not found", name);
     return;
   }
-  
+
   cube.position.set(
     deNormalize(shoulderLandmark.x, minX, maxX),
     deNormalize(shoulderLandmark.y, minY, maxY),
@@ -359,13 +394,32 @@ function detectPoseLandmarks(time) {
     return;
   }
 
+  // Accessing all  the bones
+  const bones = avatar.getBones();
+  for (const bone of bones) {
+    console.log("Bone Name : ", bone.name);
+  }
+
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
 
+    /* Try to move the shoulder but not moving but detecting the 3D model shoulder*/
+    // if (landmarks) {
+    //   avatar.moveLeftShoulderWithPoseLandmarks(landmarks);
+    //   console.log("moving");
+    // }
+
     if (landmarks && landmarks.length > 0) {
       const leftShoulder = landmarks[0][11]; // Adjust the index if needed
       const rightShoulder = landmarks[0][12]; // Adjust the index if needed
+
+      /* Try to scale the model depending upon the Shoulder position*/
+      // if (leftShoulder && rightShoulder) {
+      //   const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
+      //   const scaleFactor = shoulderDistance * 0.01; // Adjust the factor as needed
+      //   avatar.scaleModel(scaleFactor);
+      // }
 
       if (leftShoulder) {
         placeCubeOnShoulder(leftShoulder, "left-cube"); // Call the function to place the cube on the shoulder
@@ -378,25 +432,6 @@ function detectPoseLandmarks(time) {
     } else {
       console.log("No landmarks detected.");
     }
-
-    // canvas.style.width = videoWidth;
-    // canvas.style.height = videoHeight;
-
-    // video.style.width = videoWidth;
-    // video.style.height = videoHeight;
-
-    // canvasCtx.save();
-    // canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-    // canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Draw pose landmarks
-    // for (const landmark of result.landmarks) {
-    //   drawingUtils.drawLandmarks(landmark, {
-    //     radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
-    //   });
-    //   drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-    // }
-    // canvasCtx.restore();
   });
 }
 

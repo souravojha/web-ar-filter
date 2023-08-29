@@ -12,28 +12,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import * as THREE from "https://cdn.skypack.dev/three@0.150.1";
-import { OrbitControls } from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/controls/OrbitControls";
-import {
-  GLTFLoader,
-  GLTF,
-} from "https://cdn.skypack.dev/three@0.150.1/examples/jsm/loaders/GLTFLoader";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import {
   FilesetResolver,
   FaceLandmarker,
   PoseLandmarker,
   DrawingUtils,
-  Classifications,
-} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+} from "@mediapipe/tasks-vision";
 
 /**
  * Returns the world-space dimensions of the viewport at `depth` units away from
  * the camera.
  */
-function getViewportSizeAtDepth(
-  camera: THREE.PerspectiveCamera,
-  depth: number
-): THREE.Vector2 {
+function getViewportSizeAtDepth(camera, depth) {
   const viewportHeightAtDepth =
     2 * depth * Math.tan(THREE.MathUtils.degToRad(0.5 * camera.fov));
   const viewportWidthAtDepth = viewportHeightAtDepth * camera.aspect;
@@ -44,11 +37,7 @@ function getViewportSizeAtDepth(
  * Creates a `THREE.Mesh` which fully covers the `camera` viewport, is `depth`
  * units away from the camera and uses `material`.
  */
-function createCameraPlaneMesh(
-  camera: THREE.PerspectiveCamera,
-  depth: number,
-  material: THREE.Material
-): THREE.Mesh {
+function createCameraPlaneMesh(camera, depth, material) {
   if (camera.near > depth || depth > camera.far) {
     console.warn("Camera plane geometry will be clipped by the `camera`!");
   }
@@ -62,30 +51,25 @@ function createCameraPlaneMesh(
   return new THREE.Mesh(cameraPlaneGeometry, material);
 }
 
-type RenderCallback = (delta: number) => void;
-
 class BasicScene {
-  scene: THREE.Scene;
-  width: number;
-  height: number;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
-  controls: OrbitControls;
-  lastTime: number = 0;
-  callbacks: RenderCallback[] = [];
+  lastTime = 0;
+  callbacks = [];
 
   constructor() {
-    // Initialize the canvas with the same aspect ratio as the video input
-    this.height = window.innerHeight;
-    this.width = (this.height * 1280) / 720;
-    // Set up the Three.js scene, camera, and renderer
-    this.scene = new THREE.Scene();
+    this.height = window.innerHeight; // Initialize the canvas with the same aspect ratio as the video input
+    // this.width = (this.height * 1280) / 720;
+    this.width = window.innerWidth;
+    this.scene = new THREE.Scene();  // Set up the Three.js scene, camera, and renderer
     this.camera = new THREE.PerspectiveCamera(
       60,
       this.width / this.height,
       0.01,
       5000
     );
+
+    /* Cube mesh */
+    // this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    // this.scene.add(this.cube);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.width, this.height);
@@ -109,7 +93,7 @@ class BasicScene {
     this.controls.update();
 
     // Add a video background
-    const video = document.getElementById("video") as HTMLVideoElement;
+    const video = document.getElementById("video");
     const inputFrameTexture = new THREE.VideoTexture(video);
     if (!inputFrameTexture) {
       throw new Error("Failed to get the 'input_frame' texture!");
@@ -141,7 +125,7 @@ class BasicScene {
     this.renderer.render(this.scene, this.camera);
   }
 
-  render(time: number = this.lastTime): void {
+  render(time = this.lastTime) {
     const delta = (time - this.lastTime) / 1000;
     this.lastTime = time;
     // Call all registered callbacks with deltaTime parameter
@@ -155,71 +139,71 @@ class BasicScene {
   }
 }
 
-interface MatrixRetargetOptions {
-  decompose?: boolean;
-  scale?: number;
-}
-
 class Avatar {
-  scene: THREE.Scene;
-  loader: GLTFLoader = new GLTFLoader();
-  gltf: GLTF;
-  root: THREE.Bone;
-  morphTargetMeshes: THREE.Mesh[] = [];
-  url: string;
-  leftShoulder: any;
-  rightShoulder: any;
+  loader = new GLTFLoader();
+  morphTargetMeshes = [];
 
-  constructor(url: string, scene: THREE.Scene) {
+  constructor(url, scene) {
     this.url = url;
     this.scene = scene;
     this.loadModel(this.url);
   }
 
-  loadModel(url: string) {
+  loadModel(url) {
     this.url = url;
     this.loader.load(
       // URL of the model you want to load
-      url,
-      // Callback when the resource is loaded
-      (gltf: { scene: any }) => {
+      url, // Callback when the resource is loaded
+      (gltf) => {
         if (this.gltf) {
           // Reset GLTF and morphTargetMeshes if a previous model was loaded.
           this.gltf.scene.remove();
           this.morphTargetMeshes = [];
         }
         this.gltf = gltf;
-        console.log();
         this.scene.add(gltf.scene);
-        this.init(gltf);
-      },
 
-      // Called while loading is progressing
-      (progress: { loaded: number; total: number }) =>
+        //Access the iterate through model children
+        const armature = gltf.scene.getObjectByName('Armature002');
+        if(armature){
+          const bones = armature.children;
+          for(const bone of bones){
+            console.log("Bone Name : ", bone.name);
+          }
+        }
+        const modelChildren = gltf.scene.children;
+        for(const child of modelChildren){
+          if(child.isObject3D){
+            console.log("child Name : ", child.name);
+          }
+        }
+
+        this.init(gltf);
+      }, // Called while loading is progressing
+      (progress) =>
         console.log(
           "Loading model...",
           100.0 * (progress.loaded / progress.total),
           "%"
-        ),
-      // Called when loading has errors
-      (error: any) => console.error(error)
+        ), // Called when loading has errors
+      (error) => console.error(error)
     );
   }
 
-  init(gltf: GLTF) {
-    gltf.scene.traverse((object: any) => {
+  init(gltf) {
+    gltf.scene.traverse((object) => {
       // Register first bone found as the root
-      if ((object as THREE.Bone).isBone && !this.root) {
-        this.root = object as THREE.Bone;
+      if (object.isBone && !this.root) {
+        this.root = object;
         console.log(object);
       }
       // Return early if no mesh is found.
-      if (!(object as THREE.Mesh).isMesh) {
+      if (!object.isMesh) {
         // console.warn(`No mesh found`);
         return;
       }
 
-      const mesh = object as THREE.Mesh;
+      const mesh = object;
       // Reduce clipping when model is close to camera.
       mesh.frustumCulled = false;
 
@@ -232,7 +216,7 @@ class Avatar {
     });
   }
 
-  updateBlendshapes(blendshapes: Map<string, number>) {
+  updateBlendshapes(blendshapes) {
     for (const mesh of this.morphTargetMeshes) {
       if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) {
         // console.warn(`Mesh ${mesh.name} does not have morphable targets`);
@@ -256,10 +240,7 @@ class Avatar {
    * @param matrixRetargetOptions
    * @returns
    */
-  applyMatrix(
-    matrix: THREE.Matrix4,
-    matrixRetargetOptions?: MatrixRetargetOptions
-  ): void {
+  applyMatrix(matrix, matrixRetargetOptions) {
     const { decompose = false, scale = 1 } = matrixRetargetOptions || {};
     if (!this.gltf) {
       return;
@@ -278,7 +259,7 @@ class Avatar {
    * @param offset
    * @param rotation
    */
-  offsetRoot(offset: THREE.Vector3, rotation?: THREE.Vector3): void {
+  offsetRoot(offset, rotation) {
     if (this.root) {
       this.root.position.copy(offset);
       if (rotation) {
@@ -291,18 +272,21 @@ class Avatar {
   }
 }
 
-let faceLandmarker: FaceLandmarker;
-let poseLandmarker: PoseLandmarker;
-let video: HTMLVideoElement;
+let faceLandmarker;
+let poseLandmarker;
+let video;
+const videoHeight = "360px";
+const videoWidth = "480px";
 
-const scene = new BasicScene();
+const Scene = new BasicScene();
+// "https://assets.codepen.io/9177687/raccoon_head.glb",
 const avatar = new Avatar(
-  "https://assets.codepen.io/9177687/raccoon_head.glb",
-  // "./public/Model-Detailing.glb",
-  scene.scene
+  // "/raccoon_head.glb",
+  "/Model-Detailing.glb",
+  Scene.scene
 );
 
-function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
+function detectFaceLandmarks(time) {
   if (!faceLandmarker) {
     return;
   }
@@ -325,57 +309,114 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
   }
 }
 
-function detectPoseLandmarks(time: DOMHighResTimeStamp): void {
+/* For Canvas which used for drawing the points*/
+// const canvas = document.getElementById("canvas");
+// const canvasCtx = canvas.getContext("2d");
+// const drawingUtils = new DrawingUtils(canvasCtx);
+
+/* For Rotating the cube... */
+
+const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
+  console.log("coordinate", coordinate);
+  const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+  const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const cube = new THREE.Mesh(cubeGeometry, cubeMaterial); // Cube mesh
+  cube.position.set(coordinate.x, coordinate.y, coordinate.z);
+  cube.name = name;
+  Scene.scene.add(cube);
+};
+
+const maxY = -5.5,
+  minY = 5.5;
+const maxX = 10,
+  minX = -10;
+
+createCube(
+  { 
+    x: deNormalize(0), 
+    y: deNormalize(0, minY, maxY), 
+    z: deNormalize(0, minY, maxY),
+  },
+  "left-cube"
+);
+createCube(
+  { 
+    x: deNormalize(1), 
+    y: deNormalize(1, minY, maxY), 
+    z: deNormalize(1, minY, maxY),
+  },
+  "right-cube"
+);
+
+//Function for Cube place
+function placeCubeOnShoulder(shoulderLandmark, name) {
+  const cube = Scene.scene.getObjectByName(name); // Get the cube mesh
+
+  if (!cube) {
+    console.log("Cube not found", name);
+    return;
+  }
+  
+  cube.position.set(
+    deNormalize(shoulderLandmark.x, minX, maxX),
+    deNormalize(shoulderLandmark.y, minY, maxY),
+    deNormalize(shoulderLandmark.z, minX, minY)
+  );
+
+  console.log("cube.position", name, cube.position, shoulderLandmark);
+}
+
+//Function for Pose detection
+function detectPoseLandmarks(time) {
   if (!poseLandmarker) {
     console.log("Wait for poseLandmarker to load before clicking!");
     return;
   }
 
-  if (poseLandmarker) {
-    console.log("poseLandmarker IN FUNC", poseLandmarker);
-  }
-  // Get landmarks
-  const landmarkspose = poseLandmarker.detectForVideo(video, time);
-  console.log("landmarkspose", landmarkspose);
-  // const worldLandmarks = landmarkspose.poseWorldLandmarks;
-  const worldLandmarks = landmarkspose.worldLandmarks;
-  console.log("Pose Landmark data : ", poseLandmarker);
-  console.log("Landmark data : ", landmarkspose);
+  // Assuming poseLandmarker.detectForVideo is a valid function call
+  poseLandmarker.detectForVideo(video, time, (result) => {
+    const landmarks = result.landmarks;
 
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  const drawingUtils = new DrawingUtils(ctx);
+    if (landmarks && landmarks.length > 0) {
+      const leftShoulder = landmarks[0][11]; // Adjust the index if needed
+      const rightShoulder = landmarks[0][12]; // Adjust the index if needed
 
-  // ctx?.beginPath();
+      if (leftShoulder) {
+        placeCubeOnShoulder(leftShoulder, "left-cube"); // Call the function to place the cube on the shoulder
+      }
+      if (rightShoulder) {
+        placeCubeOnShoulder(rightShoulder, "right-cube"); // Call the function to place the cube on the shoulder
+      } else {
+        console.log("Left shoulder landmark not detected.");
+      }
+    } else {
+      console.log("No landmarks detected.");
+    }
 
-  // // Loop through pose connections
-  // for (let i = 0; i < PoseLandmarker.POSE_CONNECTIONS.length; i++) {
-  //   // Get pair of landmarks to connect
-  //   const start = PoseLandmarker.POSE_CONNECTIONS[i][0];
-  //   const end = PoseLandmarker.POSE_CONNECTIONS[i][1];
+    // canvas.style.width = videoWidth;
+    // canvas.style.height = videoHeight;
 
-  //   // Get their positions  
-  //   const startPos = worldLandmarks[start];
-  //   const endPos = worldLandmarks[end];
+    // video.style.width = videoWidth;
+    // video.style.height = videoHeight;
 
-  //   ctx?.moveTo(startPos.x, startPos.y);
-  //   ctx?.lineTo(endPos.x, endPos.y);
-  // }
+    // canvasCtx.save();
+    // canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+    // canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // ctx?.stroke();
-
-  for (const landmark of worldLandmarks) {
-    drawingUtils.drawLandmarks(landmark, {
-      radius: (data: { from: any }) =>
-        DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1),
-    });
-    drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-  }
+    // Draw pose landmarks
+    // for (const landmark of result.landmarks) {
+    //   drawingUtils.drawLandmarks(landmark, {
+    //     radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
+    //   });
+    //   drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+    // }
+    // canvasCtx.restore();
+  });
 }
 
-function retarget(blendshapes: Classifications[]) {
+function retarget(blendshapes) {
   const categories = blendshapes[0].categories;
-  let coefsMap = new Map<string, number>();
+  let coefsMap = new Map();
   for (let i = 0; i < categories.length; ++i) {
     const blendshape = categories[i];
     // Adjust certain blendshape values to be less prominent.
@@ -399,20 +440,16 @@ function retarget(blendshapes: Classifications[]) {
   return coefsMap;
 }
 
-function onVideoFrame(time: DOMHighResTimeStamp): void {
-  // Do something with the frame.
-  //detectFaceLandmarks(time);
-  detectPoseLandmarks(time);
-
-  // Re-register the callback to be notified about the next frame.
-  video.requestVideoFrameCallback(onVideoFrame);
+function onVideoFrame(time) {
+  detectPoseLandmarks(time); //detectFaceLandmarks(time);
+  video.requestVideoFrameCallback(onVideoFrame); // Re-register the callback to be notified about the next frame.
 }
 
 // Stream webcam into landmarker loop (and also make video visible)
-async function streamWebcamThroughFaceLandmarker(): Promise<void> {
-  video = document.getElementById("video") as HTMLVideoElement;
+async function streamWebcamThroughFaceLandmarker() {
+  video = document.getElementById("video");
 
-  function onAcquiredUserMedia(stream: MediaStream): void {
+  function onAcquiredUserMedia(stream) {
     video.srcObject = stream;
     video.onloadedmetadata = () => {
       video.play();
@@ -430,7 +467,7 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
     });
     onAcquiredUserMedia(evt);
     video.requestVideoFrameCallback(onVideoFrame);
-  } catch (e: unknown) {
+  } catch (e) {
     console.error(`Failed to acquire camera feed: ${e}`);
   }
 }
@@ -461,16 +498,27 @@ async function runDemo() {
     "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
   );
 
-  console.log("poseLandmarker", poseLandmarker);
-
   await poseLandmarker.setOptions({
     baseOptions: {
       delegate: "GPU",
     },
     runningMode: "VIDEO",
+    // outputSegmentationMasks: true,
   });
 
   console.log("Finished Loading MediaPipe Model.");
 }
 
 runDemo();
+
+function normalize(value, min = -10, max = 10) {
+  return (value - min) / (max - min);
+}
+
+function normalizeRotation(value, min = -180, max = 180) {
+  return (value - min) / (max - min);
+}
+
+function deNormalize(value, min = -10, max = 10) {
+  return value * (max - min) + min;
+} 
