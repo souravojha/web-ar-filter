@@ -178,7 +178,16 @@ class Avatar {
         }
       });
     }
+    console.log(bones)
     return bones;
+  }
+
+  //For Model Scaling
+  scaleModel(scaleFactor) {
+    if (this.gltf) {
+      const root = this.gltf.scene;
+      root.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    }
   }
 
   //For leftShoulder movement using the poseLandmark data
@@ -192,9 +201,9 @@ class Avatar {
       if (leftShoulderLandmark && leftShoulderBone) {
         // Calculate the new position for the left shoulder bone based on the landmark
         const newPosition = new THREE.Vector3(
-          leftShoulderLandmark.x,  // X coordinate of the landmark
-          leftShoulderLandmark.y,  // Y coordinate of the landmark
-          leftShoulderLandmark.z   // Z coordinate of the landmark
+          deNormalize(leftShoulderLandmark.x),  // X coordinate of the landmark
+          deNormalize(leftShoulderLandmark.y),  // Y coordinate of the landmark
+          deNormalize(leftShoulderLandmark.z)   // Z coordinate of the landmark
         );
 
         // Set the new position of the left shoulder bone
@@ -202,7 +211,7 @@ class Avatar {
       }
     }
   }
-  //For leftShoulder movement using the poseLandmark data
+  //For RightShoulder movement using the poseLandmark data
   moveRightShoulderWithPoseLandmarks(landmarks) {
     const rightShoulderIndex = 12; // Index for the RIght shoulder landmark, adjust if needed
     if (landmarks && landmarks.length > 0 && landmarks[0].length > rightShoulderIndex) {
@@ -213,13 +222,55 @@ class Avatar {
       if (RightShoulderLandmark && RightShoulderBone) {
         // Calculate the new position for the left shoulder bone based on the landmark
         const newPosition = new THREE.Vector3(
-          RightShoulderLandmark.x,  // X coordinate of the landmark
-          RightShoulderLandmark.y,  // Y coordinate of the landmark
-          RightShoulderLandmark.z   // Z coordinate of the landmark
+          deNormalize(RightShoulderLandmark.x),  // X coordinate of the landmark
+          deNormalize(RightShoulderLandmark.y),  // Y coordinate of the landmark
+          deNormalize(RightShoulderLandmark.z)   // Z coordinate of the landmark
         );
 
         // Set the new position of the left shoulder bone
         RightShoulderBone.position.copy(newPosition);
+      }
+    }
+  }
+  //For RightUpLeg movement using the poseLandmark data
+  moveRightUpLegWithPoseLandmarks(landmarks) {
+    const RightUpLegIndex = 23; // Index for the RIght shoulder landmark, adjust if needed
+    if (landmarks && landmarks.length > 0 && landmarks[0].length > RightUpLegIndex) {
+      const RightUpLegLandmark = landmarks[0][RightUpLegIndex];
+      const avatarBones = this.getBones();
+      const RightUpLegBone = avatarBones.find(bone => bone.name === 'RightUpLeg');
+
+      if (RightUpLegLandmark && RightUpLegBone) {
+        // Calculate the new position for the left shoulder bone based on the landmark
+        const newPosition = new THREE.Vector3(
+          deNormalize(RightUpLegLandmark.x),  // X coordinate of the landmark
+          deNormalize(RightUpLegLandmark.y),  // Y coordinate of the landmark
+          deNormalize(RightUpLegLandmark.z)   // Z coordinate of the landmark
+        );
+
+        // Set the new position of the left shoulder bone
+        RightUpLegBone.position.copy(newPosition);
+      }
+    }
+  }
+  //For leftUpLeg movement using the poseLandmark data
+  moveLeftUpLegWithPoseLandmarks(landmarks) {
+    const LeftUpLegIndex = 24; // Index for the RIght shoulder landmark, adjust if needed
+    if (landmarks && landmarks.length > 0 && landmarks[0].length > LeftUpLegIndex) {
+      const LeftUpLegLandmark = landmarks[0][LeftUpLegIndex];
+      const avatarBones = this.getBones();
+      const LeftUpLegBone = avatarBones.find(bone => bone.name === 'LeftUpLeg');
+
+      if (LeftUpLegLandmark && LeftUpLegBone) {
+        // Calculate the new position for the left shoulder bone based on the landmark
+        const newPosition = new THREE.Vector3(
+          deNormalize(LeftUpLegLandmark.x),  // X coordinate of the landmark
+          deNormalize(LeftUpLegLandmark.y),  // Y coordinate of the landmark
+          deNormalize(LeftUpLegLandmark.z)   // Z coordinate of the landmark
+        );
+
+        // Set the new position of the left shoulder bone
+        LeftUpLegBone.position.copy(newPosition);
       }
     }
   }
@@ -235,7 +286,7 @@ class Avatar {
       if (!object.isMesh) {
         console.warn(`No mesh found`);
         return;
-      }          
+      }
 
       const mesh = object;
       // Reduce clipping when model is close to camera.
@@ -311,8 +362,12 @@ function calculateDistance(point1, point2) {
   const dx = point2[0] - point1[0];
   const dy = point2[1] - point1[1];
   const dz = point2[2] - point1[2];
+  console.log(point1[0])
+  console.log(dy)
+  console.log(dz)
 
-  return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  return distance;
 }
 
 
@@ -424,6 +479,7 @@ function detectPoseLandmarks(time) {
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
+    console.log(landmarks)
 
     /* Try to move the shoulder but not moving but detecting the 3D model shoulder*/
     // if (landmarks) {
@@ -434,13 +490,23 @@ function detectPoseLandmarks(time) {
     if (landmarks && landmarks.length > 0) {
       const leftShoulder = landmarks[0][11]; // Adjust the index if needed
       const rightShoulder = landmarks[0][12]; // Adjust the index if needed
-
+      const LeftUpLeg = landmarks[0][24];
+      const RightUpLeg = landmarks[0][23];
       /* Try to scale the model depending upon the Shoulder position*/
       // if (leftShoulder && rightShoulder) {
       //   const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
       //   const scaleFactor = shoulderDistance * 0.01; // Adjust the factor as needed
       //   avatar.scaleModel(scaleFactor);
       // }
+
+      // Try to Calculate the distance between two shoulder points
+      const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
+      const scaleFactor = shoulderDistance * 0.001; // Adjust the factor as needed
+      console.log("Distance : " + shoulderDistance);
+
+      // Calling the Function for the scaling the model
+      // avatar.scaleModel(scaleFactor);
+
 
       if (leftShoulder) {
         // Call the function to place the cube on the shoulder
@@ -450,11 +516,14 @@ function detectPoseLandmarks(time) {
         avatar.moveLeftShoulderWithPoseLandmarks(landmarks);
       }
       if (rightShoulder) {
-        // Call the function to place the cube on the shoulder
         placeCubeOnShoulder(rightShoulder, "right-cube");
-
-        // Move the LeftShoulder bone using pose landmark data
         avatar.moveRightShoulderWithPoseLandmarks(landmarks);
+      }
+      if (LeftUpLeg) {
+        avatar.moveLeftUpLegWithPoseLandmarks(landmarks);
+      }
+      if (RightUpLeg) {
+        avatar.moveRightUpLegWithPoseLandmarks(landmarks);
       } else {
         console.log("Left shoulder landmark not detected.");
       }
