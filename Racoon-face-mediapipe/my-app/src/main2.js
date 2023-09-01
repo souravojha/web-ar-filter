@@ -190,7 +190,7 @@ class Avatar {
     }
   }
 
-  // Function For Model Placing On
+  // Function For Model Placing On the Body
   ladndmarkForPlacing(landmarks, boneIndex, boneName) {
     if (landmarks && landmarks.length > 0 && landmarks[0].length > boneIndex) {
       const boneLandmark = landmarks[0][boneIndex];
@@ -207,6 +207,9 @@ class Avatar {
       }
     }
   }
+
+  //Function for spine and other to place the model on the body only manipulating z index
+
 
   init(gltf) {
     gltf.scene.traverse((object) => {
@@ -421,6 +424,10 @@ function detectPoseLandmarks(time) {
     // }
 
     if (landmarks && landmarks.length > 0) {
+      const neck = landmarks[0][0];
+      const spine = landmarks[0][0];
+
+
       const leftShoulder = landmarks[0][11];
       const leftArm = landmarks[0][13];
       const leftForeArm = landmarks[0][15];
@@ -452,6 +459,17 @@ function detectPoseLandmarks(time) {
       // Calling the Function for the scaling the model
       // avatar.scaleModel(scaleFactor);
 
+      // For Neck
+      if (neck) {
+        avatar.ladndmarkForPlacing(landmarks, 0, "Neck");
+      }
+      //For Spine and Heap we are taking one nearest z value and creating another function for placing on the body or try to match the z-axis
+      if(spine){
+        avatar.ladndmarkForPlacing(landmarks, 0, "Hips");
+        avatar.ladndmarkForPlacing(landmarks, 0, "Spine");
+        avatar.ladndmarkForPlacing(landmarks, 0, "Spine1");
+        avatar.ladndmarkForPlacing(landmarks, 0, "Spine2");
+      }
 
       //For Full Left Side
       if (leftShoulder) {
