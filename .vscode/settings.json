@@ -10,6 +10,7 @@
         "Fileset",
         "gltf",
         "importmap",
+        "ladndmark",
         "Landmarker",
         "landmarkspose",
         "lerp",

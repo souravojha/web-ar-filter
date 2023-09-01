@@ -190,87 +190,20 @@ class Avatar {
     }
   }
 
-  //For leftShoulder movement using the poseLandmark data
-  moveLeftShoulderWithPoseLandmarks(landmarks) {
-    const leftShoulderIndex = 11; // Index for the left shoulder landmark, adjust if needed
-    if (landmarks && landmarks.length > 0 && landmarks[0].length > leftShoulderIndex) {
-      const leftShoulderLandmark = landmarks[0][leftShoulderIndex];
+  // Function For Model Placing On
+  ladndmarkForPlacing(landmarks, boneIndex, boneName) {
+    if (landmarks && landmarks.length > 0 && landmarks[0].length > boneIndex) {
+      const boneLandmark = landmarks[0][boneIndex];
       const avatarBones = this.getBones();
-      const leftShoulderBone = avatarBones.find(bone => bone.name === 'LeftShoulder');
-
-      if (leftShoulderLandmark && leftShoulderBone) {
-        // Calculate the new position for the left shoulder bone based on the landmark
+      const legBone = avatarBones.find(bone => bone.name === boneName);
+      if (boneLandmark && legBone) {
         const newPosition = new THREE.Vector3(
-          deNormalize(leftShoulderLandmark.x),  // X coordinate of the landmark
-          deNormalize(leftShoulderLandmark.y),  // Y coordinate of the landmark
-          deNormalize(leftShoulderLandmark.z)   // Z coordinate of the landmark
+          deNormalize(boneLandmark.x), 
+          deNormalize(boneLandmark.y),
+          deNormalize(boneLandmark.z)
         );
-
-        // Set the new position of the left shoulder bone
-        leftShoulderBone.position.copy(newPosition);
-      }
-    }
-  }
-  //For RightShoulder movement using the poseLandmark data
-  moveRightShoulderWithPoseLandmarks(landmarks) {
-    const rightShoulderIndex = 12; // Index for the RIght shoulder landmark, adjust if needed
-    if (landmarks && landmarks.length > 0 && landmarks[0].length > rightShoulderIndex) {
-      const RightShoulderLandmark = landmarks[0][rightShoulderIndex];
-      const avatarBones = this.getBones();
-      const RightShoulderBone = avatarBones.find(bone => bone.name === 'RightShoulder');
-
-      if (RightShoulderLandmark && RightShoulderBone) {
-        // Calculate the new position for the left shoulder bone based on the landmark
-        const newPosition = new THREE.Vector3(
-          deNormalize(RightShoulderLandmark.x),  // X coordinate of the landmark
-          deNormalize(RightShoulderLandmark.y),  // Y coordinate of the landmark
-          deNormalize(RightShoulderLandmark.z)   // Z coordinate of the landmark
-        );
-
-        // Set the new position of the left shoulder bone
-        RightShoulderBone.position.copy(newPosition);
-      }
-    }
-  }
-  //For RightUpLeg movement using the poseLandmark data
-  moveRightUpLegWithPoseLandmarks(landmarks) {
-    const RightUpLegIndex = 23; // Index for the RIght shoulder landmark, adjust if needed
-    if (landmarks && landmarks.length > 0 && landmarks[0].length > RightUpLegIndex) {
-      const RightUpLegLandmark = landmarks[0][RightUpLegIndex];
-      const avatarBones = this.getBones();
-      const RightUpLegBone = avatarBones.find(bone => bone.name === 'RightUpLeg');
-
-      if (RightUpLegLandmark && RightUpLegBone) {
-        // Calculate the new position for the left shoulder bone based on the landmark
-        const newPosition = new THREE.Vector3(
-          deNormalize(RightUpLegLandmark.x),  // X coordinate of the landmark
-          deNormalize(RightUpLegLandmark.y),  // Y coordinate of the landmark
-          deNormalize(RightUpLegLandmark.z)   // Z coordinate of the landmark
-        );
-
-        // Set the new position of the left shoulder bone
-        RightUpLegBone.position.copy(newPosition);
-      }
-    }
-  }
-  //For leftUpLeg movement using the poseLandmark data
-  moveLeftUpLegWithPoseLandmarks(landmarks) {
-    const LeftUpLegIndex = 24; // Index for the RIght shoulder landmark, adjust if needed
-    if (landmarks && landmarks.length > 0 && landmarks[0].length > LeftUpLegIndex) {
-      const LeftUpLegLandmark = landmarks[0][LeftUpLegIndex];
-      const avatarBones = this.getBones();
-      const LeftUpLegBone = avatarBones.find(bone => bone.name === 'LeftUpLeg');
-
-      if (LeftUpLegLandmark && LeftUpLegBone) {
-        // Calculate the new position for the left shoulder bone based on the landmark
-        const newPosition = new THREE.Vector3(
-          deNormalize(LeftUpLegLandmark.x),  // X coordinate of the landmark
-          deNormalize(LeftUpLegLandmark.y),  // Y coordinate of the landmark
-          deNormalize(LeftUpLegLandmark.z)   // Z coordinate of the landmark
-        );
-
-        // Set the new position of the left shoulder bone
-        LeftUpLegBone.position.copy(newPosition);
+  
+        legBone.position.copy(newPosition);
       }
     }
   }
@@ -488,10 +421,22 @@ function detectPoseLandmarks(time) {
     // }
 
     if (landmarks && landmarks.length > 0) {
-      const leftShoulder = landmarks[0][11]; // Adjust the index if needed
-      const rightShoulder = landmarks[0][12]; // Adjust the index if needed
-      const LeftUpLeg = landmarks[0][24];
-      const RightUpLeg = landmarks[0][23];
+      const leftShoulder = landmarks[0][11];
+      const leftArm = landmarks[0][13];
+      const leftForeArm = landmarks[0][15];
+
+      const leftUpLeg = landmarks[0][23];
+      const leftLeg = landmarks[0][25];
+      const leftFoot = landmarks[0][27];
+
+      const rightShoulder = landmarks[0][12];
+      const rightArm = landmarks[0][14];
+      const rightForeArm = landmarks[0][16];
+
+      const rightUpLeg = landmarks[0][24];
+      const rightLeg = landmarks[0][26];
+      const rightFoot = landmarks[0][28];
+
       /* Try to scale the model depending upon the Shoulder position*/
       // if (leftShoulder && rightShoulder) {
       //   const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
@@ -508,23 +453,47 @@ function detectPoseLandmarks(time) {
       // avatar.scaleModel(scaleFactor);
 
 
+      //For Full Left Side
       if (leftShoulder) {
-        // Call the function to place the cube on the shoulder
-        placeCubeOnShoulder(leftShoulder, "left-cube");
+        avatar.ladndmarkForPlacing(landmarks, 11, "LeftShoulder");
+      }
+      if(leftArm){
+        avatar.ladndmarkForPlacing(landmarks, 13, "LeftArm");
+      }
+      if(leftForeArm){
+        avatar.ladndmarkForPlacing(landmarks, 15, "LeftForeArm");
+      }
+      if (leftUpLeg) {
+        avatar.ladndmarkForPlacing(landmarks, 23, "LeftUpLeg");
+      }
+      if (leftLeg) {
+        avatar.ladndmarkForPlacing(landmarks, 25, "LeftLeg");
+      }
+      if(leftFoot){
+        avatar.ladndmarkForPlacing(landmarks, 27, "LeftFoot");
+      }
 
-        // Move the LeftShoulder bone using pose landmark data
-        avatar.moveLeftShoulderWithPoseLandmarks(landmarks);
-      }
+      //For Full Right Side
       if (rightShoulder) {
-        placeCubeOnShoulder(rightShoulder, "right-cube");
-        avatar.moveRightShoulderWithPoseLandmarks(landmarks);
+        avatar.ladndmarkForPlacing(landmarks, 12, "RightShoulder");
       }
-      if (LeftUpLeg) {
-        avatar.moveLeftUpLegWithPoseLandmarks(landmarks);
+      if (rightArm) {
+        avatar.ladndmarkForPlacing(landmarks, 14, "RightArm");
       }
-      if (RightUpLeg) {
-        avatar.moveRightUpLegWithPoseLandmarks(landmarks);
-      } else {
+      if (rightForeArm) {
+        avatar.ladndmarkForPlacing(landmarks, 16, "RightForeArm");
+      }
+      if (rightUpLeg) {
+        avatar.ladndmarkForPlacing(landmarks, 24, "RightUpLeg");
+      }
+      if (rightLeg) {
+        avatar.ladndmarkForPlacing(landmarks, 26, "RightLeg");
+      }
+      if (rightFoot) {
+        avatar.ladndmarkForPlacing(landmarks, 28, "RightFoot");
+      }
+      
+      else {
         console.log("Left shoulder landmark not detected.");
       }
     } else {
