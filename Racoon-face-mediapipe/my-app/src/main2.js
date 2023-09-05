@@ -178,7 +178,7 @@ class Avatar {
         }
       });
     }
-    console.log(bones)
+    // console.log(bones)
     return bones;
   }
 
@@ -186,6 +186,7 @@ class Avatar {
   scaleModel(scaleFactor) {
     if (this.gltf) {
       const root = this.gltf.scene;
+      console.log("root", root);
       root.scale.set(scaleFactor, scaleFactor, scaleFactor);
     }
   }
@@ -298,9 +299,9 @@ function calculateDistance(point1, point2) {
   const dx = point2[0] - point1[0];
   const dy = point2[1] - point1[1];
   const dz = point2[2] - point1[2];
-  console.log(point1[0])
-  console.log(dy)
-  console.log(dz)
+  //console.log(point1[0])
+  // console.log(dy)
+  // console.log(dz)
 
   const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
   return distance;
@@ -344,7 +345,7 @@ function detectFaceLandmarks(time) {
   }
 }
 const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
-  console.log("coordinate", coordinate);
+  // console.log("coordinate", coordinate);
   const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
   const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   const cube = new THREE.Mesh(cubeGeometry, cubeMaterial); // Cube mesh
@@ -386,7 +387,7 @@ function placeCubeOnShoulder(shoulderLandmark, name) {
   const cube = Scene.scene.getObjectByName(name); // Get the cube mesh
 
   if (!cube) {
-    console.log("Cube not found", name);
+    // console.log("Cube not found", name);
     return;
   }
 
@@ -396,7 +397,7 @@ function placeCubeOnShoulder(shoulderLandmark, name) {
     deNormalize(shoulderLandmark.z, minX, minY)
   );
 
-  console.log("cube.position", name, cube.position, shoulderLandmark);
+  // console.log("cube.position", name, cube.position, shoulderLandmark);
 }
 
 //Function for Pose detection
@@ -415,7 +416,7 @@ function detectPoseLandmarks(time) {
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
-    console.log(landmarks)
+    // console.log(landmarks)
 
     /* Try to move the shoulder but not moving but detecting the 3D model shoulder*/
     // if (landmarks) {
@@ -426,7 +427,6 @@ function detectPoseLandmarks(time) {
     if (landmarks && landmarks.length > 0) {
       const neck = landmarks[0][0];
       const spine = landmarks[0][0];
-
 
       const leftShoulder = landmarks[0][11];
       const leftArm = landmarks[0][13];
@@ -444,21 +444,26 @@ function detectPoseLandmarks(time) {
       const rightLeg = landmarks[0][26];
       const rightFoot = landmarks[0][28];
 
+      const width = Math.abs(leftShoulder.x - rightShoulder.x);
+      console.log("width : ", width*100); // in Cm
+
+      const height = Math.abs(leftUpLeg.y - neck.y);
+      console.log("Height : ", height*100); // in Cm
+
+      const scaleFactor = width + height;
+      console.log("Scale Factor : ",scaleFactor);
+      avatar.scaleModel(scaleFactor);
+
       /* Try to scale the model depending upon the Shoulder position*/
       // if (leftShoulder && rightShoulder) {
       //   const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
       //   const scaleFactor = shoulderDistance * 0.01; // Adjust the factor as needed
       //   avatar.scaleModel(scaleFactor);
       // }
-
-      // Try to Calculate the distance between two shoulder points
-      const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
-      const scaleFactor = shoulderDistance * 0.001; // Adjust the factor as needed
-      console.log("Distance : " + shoulderDistance);
-
+      
       // Calling the Function for the scaling the model
       // avatar.scaleModel(scaleFactor);
-
+    
       // For Neck
       if (neck) {
         avatar.ladndmarkForPlacing(landmarks, 0, "Neck");
@@ -510,7 +515,6 @@ function detectPoseLandmarks(time) {
       if (rightFoot) {
         avatar.ladndmarkForPlacing(landmarks, 28, "RightFoot");
       }
-      
       else {
         console.log("Left shoulder landmark not detected.");
       }
