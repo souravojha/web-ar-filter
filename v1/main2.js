@@ -16,7 +16,7 @@ const list = [
   { name: "hair2", isVisible: false },
   { name: "hair3", isVisible: false },
   { name: "hair4", isVisible: false },
-  { name: "hair5", isVisible: true },
+  { name: "hair5", isVisible: false },
   { name: "mask1", isVisible: false },
   { name: "mask2", isVisible: false },
   { name: "mask3", isVisible: false },
