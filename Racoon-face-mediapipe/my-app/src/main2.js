@@ -198,12 +198,12 @@ class Avatar {
       const avatarBones = this.getBones();
       const legBone = avatarBones.find(bone => bone.name === boneName);
       if (boneLandmark && legBone) {
+        const translationFactor = 0.1;
         const newPosition = new THREE.Vector3(
-          deNormalize(boneLandmark.x), 
-          deNormalize(boneLandmark.y),
-          deNormalize(boneLandmark.z)
+          boneLandmark.x * translationFactor,
+          boneLandmark.y * translationFactor,
+          boneLandmark.z * translationFactor
         );
-  
         legBone.position.copy(newPosition);
       }
     }
@@ -354,51 +354,45 @@ const createCube = (coordinate = { x: 0, y: 0, z: 10 }, name) => {
   Scene.scene.add(cube);
 };
 
-const maxY = -5.5,
-  minY = 5.5;
-const maxX = 10,
-  minX = -10;
+// const maxY = -5.5,
+//   minY = 5.5;
+// const maxX = 10,
+//   minX = -10;
 
-createCube(
-  {
-    x: deNormalize(0),
-    y: deNormalize(0, minY, maxY),
-    z: deNormalize(0, minY, maxY),
-  },
-  "left-cube"
-);
-createCube(
-  {
-    x: deNormalize(1),
-    y: deNormalize(1, minY, maxY),
-    z: deNormalize(1, minY, maxY),
-  },
-  "right-cube"
-);
+// createCube(
+//   {
+//     x: deNormalize(0),
+//     y: deNormalize(0, minY, maxY),
+//     z: deNormalize(0, minY, maxY),
+//   },
+//   "left-cube"
+// );
+// createCube(
+//   {
+//     x: deNormalize(1),
+//     y: deNormalize(1, minY, maxY),
+//     z: deNormalize(1, minY, maxY),
+//   },
+//   "right-cube"
+// );
 
-/* Accessing all  the bones */
-// const bones = avatar.getBones();
-// for (const bone of bones) {
-//   console.log("Bone Name : ", bone.name);
+// //Function for Cube place
+// function placeCubeOnShoulder(shoulderLandmark, name) {
+//   const cube = Scene.scene.getObjectByName(name); // Get the cube mesh
+
+//   if (!cube) {
+//     // console.log("Cube not found", name);
+//     return;
+//   }
+
+//   cube.position.set(
+//     deNormalize(shoulderLandmark.x, minX, maxX),
+//     deNormalize(shoulderLandmark.y, minY, maxY),
+//     deNormalize(shoulderLandmark.z, minX, minY)
+//   );
+
+//   // console.log("cube.position", name, cube.position, shoulderLandmark);
 // }
-
-//Function for Cube place
-function placeCubeOnShoulder(shoulderLandmark, name) {
-  const cube = Scene.scene.getObjectByName(name); // Get the cube mesh
-
-  if (!cube) {
-    // console.log("Cube not found", name);
-    return;
-  }
-
-  cube.position.set(
-    deNormalize(shoulderLandmark.x, minX, maxX),
-    deNormalize(shoulderLandmark.y, minY, maxY),
-    deNormalize(shoulderLandmark.z, minX, minY)
-  );
-
-  // console.log("cube.position", name, cube.position, shoulderLandmark);
-}
 
 //Function for Pose detection
 function detectPoseLandmarks(time) {
@@ -416,13 +410,6 @@ function detectPoseLandmarks(time) {
   // Assuming poseLandmarker.detectForVideo is a valid function call
   poseLandmarker.detectForVideo(video, time, (result) => {
     const landmarks = result.landmarks;
-    // console.log(landmarks)
-
-    /* Try to move the shoulder but not moving but detecting the 3D model shoulder*/
-    // if (landmarks) {
-    //   avatar.moveLeftShoulderWithPoseLandmarks(landmarks);
-    //   console.log("moving");
-    // }
 
     if (landmarks && landmarks.length > 0) {
       const neck = landmarks[0][0];
@@ -454,16 +441,6 @@ function detectPoseLandmarks(time) {
       console.log("Scale Factor : ",scaleFactor);
       avatar.scaleModel(scaleFactor);
 
-      /* Try to scale the model depending upon the Shoulder position*/
-      // if (leftShoulder && rightShoulder) {
-      //   const shoulderDistance = calculateDistance(leftShoulder, rightShoulder);
-      //   const scaleFactor = shoulderDistance * 0.01; // Adjust the factor as needed
-      //   avatar.scaleModel(scaleFactor);
-      // }
-      
-      // Calling the Function for the scaling the model
-      // avatar.scaleModel(scaleFactor);
-    
       // For Neck
       if (neck) {
         avatar.ladndmarkForPlacing(landmarks, 0, "Neck");
@@ -551,6 +528,7 @@ function retarget(blendshapes) {
 }
 
 function onVideoFrame(time) {
+  // detectFaceLandmarks(time);
   detectPoseLandmarks(time); //detectFaceLandmarks(time);
   video.requestVideoFrameCallback(onVideoFrame); // Re-register the callback to be notified about the next frame.
 }

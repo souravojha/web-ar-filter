@@ -392,25 +392,6 @@ function detectPoseLandmarks(time) {
     } else {
       console.log("No landmarks detected.");
     }
-
-    // canvas.style.width = videoWidth;
-    // canvas.style.height = videoHeight;
-
-    // video.style.width = videoWidth;
-    // video.style.height = videoHeight;
-
-    // canvasCtx.save();
-    // canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-    // canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Draw pose landmarks
-    // for (const landmark of result.landmarks) {
-    //   drawingUtils.drawLandmarks(landmark, {
-    //     radius: (data) => DrawingUtils.lerp(data.from?.z, -0.15, 0.1, 5, 1),
-    //   });
-    //   drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-    // }
-    // canvasCtx.restore();
   });
 }
 
@@ -441,6 +422,7 @@ function retarget(blendshapes) {
 }
 
 function onVideoFrame(time) {
+  detectFaceLandmarks(time);
   detectPoseLandmarks(time); //detectFaceLandmarks(time);
   video.requestVideoFrameCallback(onVideoFrame); // Re-register the callback to be notified about the next frame.
 }
