@@ -1,38 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import HXRC from '../static/logos/HXRC_logo.png';
-
+/*import { Camera } from '@mediapipe/camera_utils';
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+import { Hands, HAND_CONNECTIONS  } from '@mediapipe/hands';*/
+import HXRC from '../static/logos/HXRC_logo.png'
+/*import HandPicture from '../static/handpicture.png'
+import * as THREE from 'three';*/
 import { FBXLoader } from 'three-stdlib';
-
-// 3D models
 import SilverRing from '../static/models/SilverRing.fbx'
 import TiffanyRing from '../static/models/TiffanyRing.fbx'
 import GoldRing from '../static/models/GoldRing.fbx'
 import DetailedRing from '../static/models/DetailedRing.fbx'
-
 import initThreeApp from '../hooks/THREEHooks';
-
-import '../styles/loading.css';
-import '../styles/menuContainer.css';
-
+import '../styles/loading.css'
+import '../styles/menuContainer.css'
 import { Link } from 'react-router-dom';
 
 const HandComponent = () => {
+
     const [loaded, setLoaded] = useState(false)
     const [fingerSelected, setFinger] = useState("")
     const [ringInScene, setRing] = useState()
     const [bone, setBone] = useState()
     const [ringSelected, setSelectedRing] = useState()
     const [ringString, setRingString] = useState("")
+
     const [app, setApp] = useState()
 
     const addRingToFinger = (threeApp, string, model) => {
       if(bone !== undefined) {
         bone.remove(ringInScene)
       }
+      
       console.log("Selected Finger: ", string)
       const hand = threeApp.scene.getObjectByName('Hand')
-      console.log("Hand :", hand);
+    
       const loader = new FBXLoader()
+      
       loader.load(model, (object)=> {
         object.name = "Ring"
         object.scale.set(.3,.3,.3)
@@ -48,6 +51,7 @@ const HandComponent = () => {
     const menuAction = () => {
       const menu = document.getElementsByClassName('fingerMenu')[0]
       const arrow = document.getElementsByClassName('menuArrow')[0]
+
       if (menu.style.display === 'none') {
         menu.style.display = 'flex'
         arrow.style.transform = 'rotate(0deg)'
@@ -90,13 +94,11 @@ const HandComponent = () => {
 
   return (
     <>
-    { ringSelected != undefined && 
+    { ringSelected !== undefined && 
     <div className="menuContainer">
-
      <div className="menuArrow" onClick={() => menuAction()}>
           ᐅ
      </div>
-
       <div className="fingerMenu">
         <div className="fingerButton" onClick={() => {setFinger("Index_PIP"); addRingToFinger(app, 'Index_PIP', ringSelected)}}>
           Index finger
@@ -119,8 +121,7 @@ const HandComponent = () => {
           }
       </div>
     </div> }
-    { ringSelected === undefined && 
-    <div className="ringMenu">
+    { ringSelected === undefined && <div className="ringMenu">
       <div className="ring" onClick={() => {setSelectedRing(GoldRing); setRingString("GoldRing"); upDateRing(GoldRing)}}>
           Gold Ring
       </div>
@@ -133,15 +134,12 @@ const HandComponent = () => {
       <div className="ring" onClick={() => {setSelectedRing(DetailedRing); setRingString("DetailedRing"); upDateRing(DetailedRing)}}>
           Elven Ring
       </div>
-    </div>
-    }
+    </div>}
     <div className="container">
         <canvas className="three" width={window.innerWidth} height={window.innerHeight} cursor="grab"></canvas>
     </div>
-
     {!loaded && <img className="loadingLogo" alt="loadingLogo" src={HXRC}/>}
-    {ringString.length > 2 && 
-    <Link to="/AR" state={{ ring: ringString, fingerSelected }} className="ARButton">
+    {ringString.length > 2 && <Link to="/AR" state={{ ring: ringString, fingerSelected }} className="ARButton">
       AR
       </Link>}
     </>
