@@ -1,0 +1,45 @@
+.input_video {
+    position: absolute;
+    z-index: 201;
+    top: 0;
+    left: 0;
+}
+
+
+.output_canvas {
+    position:absolute;
+    z-index: -201;
+    top: 0;
+    left: 0;
+}
+
+.three_output {
+    position: absolute;
+    z-index: 400;
+    top: 0;
+    left: 0;
+}
+
+.loadingLogo {
+    color: deepskyblue;
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    margin-top: -150px;
+    margin-left: -150px;
+    z-index: 9001;
+    animation: rotateAnimation 3s linear infinite;
+    filter: invert(100%);
+  }
+  
+  @keyframes rotateAnimation {
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
+  }
+  
