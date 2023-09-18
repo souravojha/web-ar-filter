@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-/*import { Camera } from '@mediapipe/camera_utils';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
-import { Hands, HAND_CONNECTIONS  } from '@mediapipe/hands';*/
 import HXRC from '../static/logos/HXRC_logo.png'
-/*import HandPicture from '../static/handpicture.png'
-import * as THREE from 'three';*/
 import { FBXLoader } from 'three-stdlib';
 import SilverRing from '../static/models/SilverRing.fbx'
 import TiffanyRing from '../static/models/TiffanyRing.fbx'

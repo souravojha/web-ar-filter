@@ -21,15 +21,6 @@ const RingTracking = ( { ring } ) => {
         return distance
     }
 
-    /*const calculateAngle = (y1, y2, x1, x2) => {
-        const y = y2 - y1;
-        const x = x2 - x1;
-
-        let angle = Math.atan2(y, x)
-        angle *= 180 / Math.PI
-        return 5 * Math.round(Math.floor(angle) / 5);
-    }*/
-
     var finger
     var point
 
