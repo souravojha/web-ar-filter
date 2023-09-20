@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { Hands, HAND_CONNECTIONS  } from '@mediapipe/hands';
-import HXRC from '../static/logos/HXRC_logo.png'
-import HandPicture from '../static/handpicture.png'
+import HXRC from '../static/logos/HXRC_logo.png';
+import HandPicture from '../static/handpicture.png';
 import * as THREE from 'three';
 import initThreeApp from '../hooks/THREEHooks';
-import '../styles/loading.css'
-import '../styles/canvas.css'
+import '../styles/loading.css';
+import '../styles/canvas.css';
 
 const RingTracking = ( { ring } ) => {
-    
     const string = ring.ring
     const fingerString = ring.fingerSelected
     const [loaded, setLoaded] = useState(false);
@@ -52,8 +51,6 @@ const RingTracking = ( { ring } ) => {
     }
 
     useEffect(() => {
-        
-        
         window.addEventListener('resize', () =>{
             window.location.reload(); 
           });
@@ -79,7 +76,6 @@ const RingTracking = ( { ring } ) => {
             threeApp.scene.visible = false;
         }*/
             const onResults = (results) => {
-                
                 if(threeApp === undefined) {
                    threeApp = initThreeApp(threeCanvasElement, getVideo("width"), getVideo("height"), string)
                    return threeApp
@@ -88,6 +84,7 @@ const RingTracking = ( { ring } ) => {
                 const canvasElement = document.getElementsByClassName('output_canvas')[0]
                 canvasElement.setAttribute("style", "height:" + videoElement.offsetHeight + "px; width:" + videoElement.offsetWidth + "px;")
                 const canvasCtx = canvasElement.getContext('2d')
+
                 const modelTop = threeApp.scene.getObjectByName('RingTop')
                 const modelBottom = threeApp.scene.getObjectByName('RingBottom')
 
@@ -158,28 +155,6 @@ const RingTracking = ( { ring } ) => {
 
                         modelBottom.position.x = pos.x
                         modelBottom.position.y = pos.y
-
-
-                        /*if(modelBottom.scale !== (calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by))) {
-                            modelBottom.scale.set(calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by))
-                        }
-                        if(modelTop.scale !== (calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by))) {
-                            modelTop.scale.set(calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by), calculateDistance(x, bx, y , by))
-                        }*/
-                        
-
-                        /*modelBottom.lookAt(threeApp.threeCamera.position)
-                        modelTop.lookAt(threeApp.threeCamera.position)*/
-                        
-                        /*if(modelBottom.rotation.z !== calculateAngle( y, by, x, bx) 
-                        && modelBottom.rotation.z !== (calculateAngle(y, by, x, bx) > (calculateAngle(y, by, x, bx) + 10)) 
-                        && modelBottom.rotation.z !== (calculateAngle(y, by, x , bx) < (calculateAngle(y, by, x, bx) - 10))) {
-                            //modelBottom.lookAt(threeApp.threeCamera.position)
-                            modelBottom.rotation.z = (calculateAngle( y, by, x, bx));
-                            console.log("jälkeen", modelBottom.rotation.z)
-                        }*/
-
-                       
                         
                         if(x < ax && isRightHand) {
                             modelBottom.visible = true
@@ -211,16 +186,6 @@ const RingTracking = ( { ring } ) => {
                             }
                         }
 
-                        
-                        drawConnectors(
-                            canvasCtx, landmarks, HAND_CONNECTIONS,
-                            {color: isRightHand ? '#FFFFFF' : '#00FFF7', lineWidth: 5});
-
-                        drawLandmarks(canvasCtx, landmarks, {
-                            color: isRightHand ? '#FFFFFF' : '#00FFF7',
-                            fillColor: isRightHand ? '#00FFF7' : '#FFFFFF',
-                            lineWidth: 2
-                            });
                     }            
                 }
                 canvasCtx.restore();
@@ -249,8 +214,6 @@ const RingTracking = ( { ring } ) => {
         },
         facingMode: 'environment',
         height: {ideal: windowHeight},
-        
-
         });
         
         const run = async () =>{

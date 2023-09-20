@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import HXRC from '../static/logos/HXRC_logo.png'
 import { FBXLoader } from 'three-stdlib';
+
 import SilverRing from '../static/models/SilverRing.fbx'
 import TiffanyRing from '../static/models/TiffanyRing.fbx'
 import GoldRing from '../static/models/GoldRing.fbx'
 import DetailedRing from '../static/models/DetailedRing.fbx'
+import NiceRing from '../static/models/NiceRing.fbx'
+import Ring_2 from '../static/models/Ring_2.fbx'
+import Ring_3 from '../static/models/Ring_3.fbx'
+
 import initThreeApp from '../hooks/THREEHooks';
 import '../styles/loading.css'
 import '../styles/menuContainer.css'
 import { Link } from 'react-router-dom';
 
 const HandComponent = () => {
-
     const [loaded, setLoaded] = useState(false)
     const [fingerSelected, setFinger] = useState("")
     const [ringInScene, setRing] = useState()
     const [bone, setBone] = useState()
     const [ringSelected, setSelectedRing] = useState()
     const [ringString, setRingString] = useState("")
-
     const [app, setApp] = useState()
 
     const addRingToFinger = (threeApp, string, model) => {
@@ -28,13 +31,11 @@ const HandComponent = () => {
       
       console.log("Selected Finger: ", string)
       const hand = threeApp.scene.getObjectByName('Hand')
-    
       const loader = new FBXLoader()
-      
       loader.load(model, (object)=> {
         object.name = "Ring"
         object.scale.set(.3,.3,.3)
-        if(string === "Thumb_TIP") {
+        if(string === "Thumb_TIP") { 
           object.rotation.y = -8
         }
         hand.children[1].skeleton.getBoneByName(string).add(object)
@@ -64,7 +65,7 @@ const HandComponent = () => {
         console.log("same ring in scene already")
       }
     }
- 
+
     useEffect(()=> {
       window.addEventListener('resize', () =>{
         window.location.reload(); 
@@ -110,13 +111,15 @@ const HandComponent = () => {
         <div className="fingerButton" onClick={() => {setFinger("Thumb_TIP"); addRingToFinger(app, 'Thumb_TIP', ringSelected)}}>
           Thumb
         </div>
-        {ringInScene !== undefined && <div className="fingerButton" onClick={() => setSelectedRing()}>
+        {ringInScene !== undefined && 
+        <div className="fingerButton" onClick={() => setSelectedRing()}>
           Change Ring
           </div>
           }
       </div>
     </div> }
-    { ringSelected === undefined && <div className="ringMenu">
+    { ringSelected === undefined && 
+    <div className="ringMenu">
       <div className="ring" onClick={() => {setSelectedRing(GoldRing); setRingString("GoldRing"); upDateRing(GoldRing)}}>
           Gold Ring
       </div>
@@ -128,6 +131,15 @@ const HandComponent = () => {
       </div>
       <div className="ring" onClick={() => {setSelectedRing(DetailedRing); setRingString("DetailedRing"); upDateRing(DetailedRing)}}>
           Elven Ring
+      </div>
+      <div className="ring" onClick={() => {setSelectedRing(NiceRing); setRingString("NiceRing"); upDateRing(NiceRing)}}>
+          Nice Ring
+      </div>
+      <div className="ring" onClick={() => {setSelectedRing(Ring_2); setRingString("Ring_2"); upDateRing(Ring_2)}}>
+          Ring_2
+      </div>
+      <div className="ring" onClick={() => {setSelectedRing(Ring_3); setRingString("Ring_3"); upDateRing(Ring_3)}}>
+          Ring_3
       </div>
     </div>}
     <div className="container">

@@ -27,6 +27,10 @@
         <img id="mustache" src="/assets/mustache/mustache_1.png" />
 
         <img id="earring" src="/assets/earring/thumbnail.png" />
+        <img id="earring1" src="/assets/earring/thumbnail.png" />
+        <img id="earring2" src="/assets/earring/thumbnail.png" />
+        <img id="earring3" src="/assets/earring/thumbnail.png" />
+        <img id="earring4" src="/assets/earring/thumbnail.png" />
 
         <img id="hair" src="./public/assets/Hait/hair_1.png" />
         <img id="hair1" src="./public/assets/Hait/Hair_Model/Hair_model_1.png" />
@@ -98,6 +102,22 @@
             id="earringModel"
             src="/assets/earring/scene.gltf"
           ></a-asset-item>
+          <a-asset-item
+            id="earring1Model"
+            src="/assets/earring/EarRing_1.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="earring2Model"
+            src="/assets/earring/EarRing_2.glb"
+          ></a-asset-item>
+          <a-asset-item
+            id="earring3Model"
+            src="/assets/earring/EarRing_3.glb"
+          ></a-asset-item>
+          <!-- <a-asset-item
+            id="earring4Model"
+            src="/assets/earring/EarRing_4.glb"
+          ></a-asset-item> -->
 
           <a-asset-item
             id="hairModel"
@@ -266,6 +286,46 @@
             visible="false"
           ></a-gltf-model>
         </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 127">
+          <a-gltf-model
+            rotation="-0.1 -50 0"
+            position="-0.05 -0.3 -0.3"
+            scale="0.07 0.07 0.07"
+            src="#earring1Model"
+            class="earring1-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 127">
+          <a-gltf-model
+            rotation="-0.1 -50 0"
+            position="-0.05 -0.45 -0.3"
+            scale="0.2 0.2 0.2"
+            src="#earring2Model"
+            class="earring2-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 127">
+          <a-gltf-model
+            rotation="-0.1 -50 0"
+            position="-0.05 -0.3 -0.2"
+            scale="0.07 0.07 0.07"
+            src="#earring3Model"
+            class="earring3-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 127">
+          <a-gltf-model
+            rotation="-0.1 -50 0"
+            position="-0.05 -0.4 -0.3"
+            scale="0.07 0.07 0.07"
+            src="#earring4Model"
+            class="earring4-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
 
         <a-entity mindar-face-target="anchorIndex: 356">
           <a-gltf-model
@@ -274,6 +334,36 @@
             scale="0.07 0.07 0.07"
             src="#earringModel"
             class="earring-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 356">
+          <a-gltf-model
+          rotation="0.1 50 0"
+          position="0.05 -0.3 -0.3"
+          scale="0.07 0.07 0.07"
+            src="#earring1Model"
+            class="earring1-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 356">
+          <a-gltf-model
+            rotation="0.1 50 0"
+            position="0.05 -0.45 -0.3"
+            scale="0.2 0.2 0.2"
+            src="#earring2Model"
+            class="earring2-entity"
+            visible="false"
+          ></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 356">
+          <a-gltf-model
+            rotation="0.1 50 0"
+            position="0.05 -0.3 -0.2"
+            scale="0.07 0.07 0.07"
+            src="#earring3Model"
+            class="earring3-entity"
             visible="false"
           ></a-gltf-model>
         </a-entity>

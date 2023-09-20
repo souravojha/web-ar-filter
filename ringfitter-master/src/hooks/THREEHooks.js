@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three-stdlib';
+
 import RingTop from '../static/models/Ring_Top_fixed.fbx'
 import RingBottom from '../static/models/Ring_Bottom.fbx'
 import SRingTop from '../static/models/SilverRing1.fbx'
@@ -138,7 +139,7 @@ const initThreeApp = (canvas, w, h, string) => {
             console.log(object)
             object.scale.set(.1, .1, .1)
             let skeleton = new THREE.SkeletonHelper(object);
-            skeleton.visible = false;
+            skeleton.visible = true;
             scene.add(skeleton);
         })
     }
