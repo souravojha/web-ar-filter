@@ -9,6 +9,8 @@ import DetailedRing from '../static/models/DetailedRing.fbx'
 import NiceRing from '../static/models/NiceRing.fbx'
 import Ring_2 from '../static/models/Ring_2.fbx'
 import Ring_3 from '../static/models/Ring_3.fbx'
+import Ring_4 from '../static/models/Ring_4.fbx'
+import Ring_5 from '../static/models/Ring_5.fbx'
 
 import initThreeApp from '../hooks/THREEHooks';
 import '../styles/loading.css'
@@ -140,6 +142,12 @@ const HandComponent = () => {
       </div>
       <div className="ring" onClick={() => {setSelectedRing(Ring_3); setRingString("Ring_3"); upDateRing(Ring_3)}}>
           Ring_3
+      </div>
+      <div className="ring" onClick={() => {setSelectedRing(Ring_4); setRingString("Ring_4"); upDateRing(Ring_4)}}>
+          Ring_4
+      </div>
+      <div className="ring" onClick={() => {setSelectedRing(Ring_5); setRingString("Ring_5"); upDateRing(Ring_5)}}>
+          Ring_5
       </div>
     </div>}
     <div className="container">

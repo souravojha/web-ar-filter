@@ -7,6 +7,17 @@ import SRingTop from '../static/models/SilverRing1.fbx'
 import SRingBottom from '../static/models/SilverRing2.fbx'
 import DRingTop from '../static/models/DetailedRing1.fbx'
 import DRingBottom from '../static/models/DetailedRing2.fbx'
+import NRingTop from '../static/models/NiceRing1.fbx'
+import NRingBottom from '../static/models/NiceRing2.fbx'
+import Ring2Top from '../static/models/Ring_2Top.fbx'
+import Ring2Bottom from '../static/models/Ring_2Bottom.fbx'
+import Ring3Top from '../static/models/Ring_3Top.fbx'
+import Ring3Bottom from '../static/models/Ring_3Bottom.fbx'
+import Ring4Top from '../static/models/Ring_4Top.fbx'
+import Ring4Bottom from '../static/models/Ring_4Bottom.fbx'
+import Ring5Top from '../static/models/Ring_5Top.fbx'
+import Ring5Bottom from '../static/models/Ring_5Bottom.fbx'
+
 import HAND from '../static/models/FixedAgainHand.fbx'
 
 
@@ -119,10 +130,10 @@ const initThreeApp = (canvas, w, h, string) => {
             object.scale.set(.05,.05,.05)
             })
     } else if (string === 'DetailedRing') {
-        loader.load(DRingTop, (object) => {
-            scene.add(object)
-            object.name = "RingTop"
-            object.scale.set(.05, .05, .05)
+            loader.load(DRingTop, (object) => {
+                scene.add(object)
+                object.name = "RingTop"
+                object.scale.set(.05, .05, .05)
 
             loader.load(DRingBottom, (object) => {
                 scene.add(object)
@@ -131,6 +142,66 @@ const initThreeApp = (canvas, w, h, string) => {
                 })
         })
 
+    }else if (string === 'NiceRing') {    // NiceRing Model Start
+        loader.load(NRingTop, (object) => {
+            scene.add(object)
+            object.name = "RingTop"
+            object.scale.set(.05, .05, .05)
+
+        loader.load(NRingBottom, (object) => {
+            scene.add(object)
+            object.name = 'RingBottom'
+            object.scale.set(.05,.05,.05)
+            })
+        })
+    }else if (string === 'Ring_2') {    // Ring2 Model Start
+        loader.load(Ring2Top, (object) => {
+            scene.add(object)
+            object.name = "RingTop"
+            object.scale.set(.05, .05, .05)
+
+        loader.load(Ring2Bottom, (object) => {
+            scene.add(object)
+            object.name = 'RingBottom'
+            object.scale.set(.05,.05,.05)
+            })
+        })
+    }else if (string === 'Ring_3') {    // Ring3 Model Start
+        loader.load(Ring3Top, (object) => {
+            scene.add(object)
+            object.name = "RingTop"
+            object.scale.set(.05, .05, .05)
+
+        loader.load(Ring3Bottom, (object) => {
+            scene.add(object)
+            object.name = 'RingBottom'
+            object.scale.set(.05,.05,.05)
+            })
+        })
+    }else if (string === 'Ring_4') {    // Ring4 Model Start
+        loader.load(Ring4Top, (object) => {
+            scene.add(object)
+            object.name = "RingTop"
+            object.scale.set(.05, .05, .05)
+
+        loader.load(Ring4Bottom, (object) => {
+            scene.add(object)
+            object.name = 'RingBottom'
+            object.scale.set(.05,.05,.05)
+            })
+        })
+    }else if (string === 'Ring_5') {    // Ring5 Model Start
+        loader.load(Ring5Top, (object) => {
+            scene.add(object)
+            object.name = "RingTop"
+            object.scale.set(.05, .05, .05)
+
+        loader.load(Ring5Bottom, (object) => {
+            scene.add(object)
+            object.name = 'RingBottom'
+            object.scale.set(.05,.05,.05)
+            })
+        })
     }
     else if(string === 'hand') {
         loader.load(HAND, (object) => {
